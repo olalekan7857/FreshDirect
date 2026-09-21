@@ -2910,3 +2910,114 @@ textarea:focus-visible,
     padding-right: 20px;
   }
 }
+
+/* ==========================================================================
+   STAGE 12 — CONTACT FORM (contact.html #message only).
+   Reuses exactly: .fd-location-card (container), .fd-field / .fd-field-error
+   / .fd-optional (fields), template .form-control + pill rounding (same as
+   #fd-checkout-form), .fd-whatsapp-btn / .vs-btn (actions), tokens and
+   breakpoints. New selectors are scoped to #fd-contact-form /
+   .fd-contact-* so no other page or form is affected.
+   ========================================================================== */
+
+/* Form card owns its rhythm with flex gap (same approach as the checkout
+   delivery groups), so label/input spacing stays even at every width. */
+#fd-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+#fd-contact-form .fd-field {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+/* Pill inputs mirror the checkout form; textarea keeps the card radius. */
+#fd-contact-form .form-control {
+  border-radius: 9999px;
+  margin-bottom: 0;
+  min-height: 50px;
+  width: 100%;
+  max-width: 100%;
+}
+
+#fd-contact-form textarea.form-control {
+  border-radius: var(--fd-radius);
+  height: auto;
+  min-height: 140px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  resize: vertical;
+}
+
+#fd-contact-form .form-control[aria-invalid="true"] {
+  border-color: var(--error-color);
+}
+
+/* Inline status mirrors .fd-checkout-status (same smoke/error language). */
+.fd-contact-status {
+  background: var(--smoke-color);
+  border-radius: var(--fd-radius);
+  padding: 14px 18px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.fd-contact-status[hidden] {
+  display: none;
+}
+
+.fd-contact-status.is-error {
+  background: rgba(220, 53, 69, 0.08);
+  color: var(--error-color);
+  font-weight: 600;
+}
+
+.fd-contact-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fd-contact-actions .vs-btn {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  min-height: 50px;
+}
+
+.fd-contact-actions .vs-btn:disabled,
+.fd-contact-actions .vs-btn[aria-disabled="true"] {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Info column: same list + button rhythm as other contact cards. */
+#message .fd-location-card ul {
+  margin: 0 0 22px 0;
+  padding-left: 20px;
+}
+
+#message .fd-location-card .fd-whatsapp-btn {
+  max-width: 100%;
+}
+
+/* ---------- Contact responsive ---------- */
+@media (max-width: 767px) {
+  .fd-contact-card {
+    padding: 26px 20px;
+  }
+
+  #fd-contact-form textarea.form-control {
+    min-height: 120px;
+  }
+
+  #message .fd-location-card .fd-whatsapp-btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}

@@ -2612,6 +2612,196 @@
     renderConfirmation();
   }
 
+  /* ==========================================================================
+     STAGE 12 — Contact form (contact.html #fd-contact-form only).
+     --------------------------------------------------------------------------
+     Architecture: Contact Form UI -> FreshDirectContact.submitContact()
+     -> future Django endpoint. There is NO contact endpoint today, so the
+     boundary reports "not-configured" and the UI hands the validated
+     message to WhatsApp (the established FreshDirect channel, wired from
+     FRESH_DIRECT.whatsappNumber — never hardcoded here). No success is
+     ever claimed that did not happen; no personal data is persisted.
+     Django integration = set FRESH_DIRECT.contactEndpoint and replace
+     submitContact() with a fetch() POST of the same { name, phone,
+     email, subject, message } payload. Validation + markup stay as-is.
+     ========================================================================== */
+
+  // Future Django contact endpoint (e.g. "/api/contact/"). Empty means no
+  // backend is connected yet — the form then uses the WhatsApp handoff.
+  FRESH_DIRECT.contactEndpoint = "";
+
+  // Builds the backend-friendly payload from the live form. Trimmed;
+  // optional email is "" when not provided.
+  function buildContactPayload() {
+    var get = function (id) {
+      var el = document.getElementById(id);
+      return el ? el.value.trim() : "";
+    };
+    return {
+      name: get("fd-contact-name"),
+      phone: get("fd-contact-phone"),
+      email: get("fd-contact-email"),
+      subject: get("fd-contact-subject"),
+      message: get("fd-contact-message"),
+    };
+  }
+
+  // Submission boundary. Today: always "not-configured" (no endpoint).
+  // Django replaces this with a real POST and returns { status: "sent" }
+  // on success or { status: "failed" } on error — callers already handle
+  // all three states, so no UI changes are needed then.
+  function submitContact(payload) {
+    void payload;
+    if (FRESH_DIRECT.contactEndpoint) {
+      return { status: "not-configured" };
+    }
+    return { status: "not-configured" };
+  }
+
+  window.FreshDirectContact = {
+    buildPayload: buildContactPayload,
+    submit: submitContact,
+  };
+
+  function contactStatus(message, isError) {
+    var box = document.getElementById("fd-contact-status");
+    if (!box) {
+      return;
+    }
+    if (!message) {
+      box.textContent = "";
+      box.setAttribute("hidden", "");
+      box.classList.remove("is-error");
+      return;
+    }
+    box.textContent = message;
+    box.removeAttribute("hidden");
+    box.classList.toggle("is-error", !!isError);
+  }
+
+  function contactValidateField(form, input) {
+    var id = input.id;
+    var val = input.value.trim();
+    if (id === "fd-contact-name") {
+      checkoutSetError(form, input, val.length >= 2 ? "" : "Please enter your name.");
+    } else if (id === "fd-contact-phone") {
+      checkoutSetError(form, input, checkoutPhoneOk(val) ? "" : "Please enter a valid Nigerian phone number.");
+    } else if (id === "fd-contact-email") {
+      checkoutSetError(form, input, !val || /^\S+@\S+\.\S+$/.test(val) ? "" : "Please enter a valid email address.");
+    } else if (id === "fd-contact-subject") {
+      checkoutSetError(form, input, val.length >= 2 ? "" : "Please enter a subject.");
+    } else if (id === "fd-contact-message") {
+      checkoutSetError(form, input, val.length >= 2 ? "" : "Please enter your message.");
+    }
+  }
+
+  function contactValidate(form) {
+    form.setAttribute("data-tried", "true");
+    var firstBad = null;
+    var need = function (input, ok, message) {
+      checkoutSetError(form, input, ok ? "" : message);
+      if (!ok && !firstBad) {
+        firstBad = input;
+      }
+      return ok;
+    };
+    var byId = function (id) {
+      return document.getElementById(id);
+    };
+    var val = function (id) {
+      var el = byId(id);
+      return el ? el.value.trim() : "";
+    };
+    var ok = true;
+    ok = need(byId("fd-contact-name"), val("fd-contact-name").length >= 2, "Please enter your name.") && ok;
+    ok = need(byId("fd-contact-phone"), checkoutPhoneOk(val("fd-contact-phone")), "Please enter a valid Nigerian phone number.") && ok;
+    var email = val("fd-contact-email");
+    ok = need(byId("fd-contact-email"), !email || /^\S+@\S+\.\S+$/.test(email), "Please enter a valid email address.") && ok;
+    ok = need(byId("fd-contact-subject"), val("fd-contact-subject").length >= 2, "Please enter a subject.") && ok;
+    ok = need(byId("fd-contact-message"), val("fd-contact-message").length >= 2, "Please enter your message.") && ok;
+    if (!ok && firstBad) {
+      try {
+        firstBad.focus();
+      } catch (e) {
+        /* focus is best-effort */
+      }
+    }
+    return ok;
+  }
+
+  // WhatsApp handoff for a validated enquiry. Uses the single configured
+  // number via the shared builder — the number never appears here.
+  function contactWhatsAppHref(payload) {
+    var lines = ["Hello FreshDirect!"];
+    lines.push("");
+    lines.push("Name: " + payload.name);
+    lines.push("Phone: " + payload.phone);
+    if (payload.email) {
+      lines.push("Email: " + payload.email);
+    }
+    lines.push("Subject: " + payload.subject);
+    lines.push("");
+    lines.push(payload.message);
+    return buildLink(lines.join("\n"));
+  }
+
+  function contactFirstName(payload) {
+    return payload.name ? String(payload.name).trim().split(/\s+/)[0] : "there";
+  }
+
+  function wireContact() {
+    var form = document.getElementById("fd-contact-form");
+    if (!form) {
+      return;
+    }
+    var sendBtn = document.getElementById("fd-contact-send");
+
+    // Gentle validation (same convention as checkout): blur validates only
+    // after a first submit attempt; typing clears the field error at once.
+    var fields = form.querySelectorAll("input, textarea");
+    for (var f = 0; f < fields.length; f++) {
+      (function (input) {
+        input.addEventListener("blur", function () {
+          if (form.getAttribute("data-tried") === "true" && !input.disabled) {
+            contactValidateField(form, input);
+          }
+        });
+        input.addEventListener("input", function () {
+          checkoutSetError(form, input, "");
+        });
+      })(fields[f]);
+    }
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (!contactValidate(form)) {
+        contactStatus("Please fix the highlighted fields.", true);
+        return;
+      }
+      var payload = buildContactPayload();
+      var result = submitContact(payload);
+      if (result && result.status === "sent") {
+        contactStatus("Thank you, " + contactFirstName(payload) + " — your message has been received. We will respond shortly.", false);
+        form.reset();
+        form.removeAttribute("data-tried");
+        return;
+      }
+      if (result && result.status === "failed") {
+        contactStatus("Something went wrong. Please try again or chat with us on WhatsApp.", true);
+        return;
+      }
+      // No backend endpoint yet: hand the validated message to WhatsApp,
+      // the established FreshDirect channel. Nothing is claimed as sent
+      // until the customer sends it there.
+      window.open(contactWhatsAppHref(payload), "_blank", "noopener");
+      contactStatus("Thank you, " + contactFirstName(payload) + " — your message is ready in WhatsApp. Press send there and we will respond shortly.", false);
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.removeAttribute("aria-disabled");
+      }
+    });
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       wireWhatsApp();
@@ -2626,6 +2816,7 @@
       wireCartPage();
       wireCheckout();
       wireConfirmation();
+      wireContact();
     });
   } else {
     wireWhatsApp();
@@ -2640,5 +2831,6 @@
     wireCartPage();
     wireCheckout();
     wireConfirmation();
+    wireContact();
   }
 })();

@@ -253,6 +253,78 @@
     </section>
 
     <!--==============================
+    Send us a message
+    ============================== -->
+    <section class="space-bottom" id="message" aria-labelledby="fd-message-title">
+        <div class="container">
+            <div class="title-area text-center">
+                <div class="title-img">
+                    <img src="assets/img/icon/title-logo.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+                </div>
+                <span class="sec-subtitle">Prefer to write?</span>
+                <h2 class="sec-title" id="fd-message-title">Send Us a Message</h2>
+                <p>Send a general enquiry and FreshDirect will respond — or chat instantly on WhatsApp.</p>
+            </div>
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-5">
+                    <div class="fd-location-card">
+                        <span class="sec-subtitle">How it works</span>
+                        <h3 class="h4">What happens next</h3>
+                        <p>Fill in your details and your message. Your message opens in WhatsApp, ready to send — FreshDirect confirms and responds personally.</p>
+                        <ul>
+                            <li>No account needed</li>
+                            <li>We reply on WhatsApp</li>
+                            <li>Open Mon – Sat: 09.00 to 06.00</li>
+                        </ul>
+                        <a href="#" class="fd-whatsapp-btn" data-whatsapp="general"><i class="fab fa-whatsapp" aria-hidden="true"></i><span>Chat on WhatsApp instead</span></a>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="fd-location-card fd-contact-card">
+                        <form id="fd-contact-form" novalidate>
+                            <div class="fd-field">
+                                <label for="fd-contact-name">Full Name</label>
+                                <input class="form-control" type="text" id="fd-contact-name" name="name" autocomplete="name" placeholder="e.g. Adaeze Okafor" required>
+                                <span class="fd-field-error" id="fd-contact-name-error" hidden></span>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="fd-field">
+                                        <label for="fd-contact-phone">Phone Number</label>
+                                        <input class="form-control" type="tel" id="fd-contact-phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="e.g. 0803 123 4567" required>
+                                        <span class="fd-field-error" id="fd-contact-phone-error" hidden></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fd-field">
+                                        <label for="fd-contact-email">Email Address <span class="fd-optional">(optional)</span></label>
+                                        <input class="form-control" type="email" id="fd-contact-email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+                                        <span class="fd-field-error" id="fd-contact-email-error" hidden></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fd-field">
+                                <label for="fd-contact-subject">Subject</label>
+                                <input class="form-control" type="text" id="fd-contact-subject" name="subject" autocomplete="off" placeholder="e.g. Question about delivery" required>
+                                <span class="fd-field-error" id="fd-contact-subject-error" hidden></span>
+                            </div>
+                            <div class="fd-field">
+                                <label for="fd-contact-message">Message</label>
+                                <textarea class="form-control" id="fd-contact-message" name="message" rows="5" placeholder="How can we help?" required></textarea>
+                                <span class="fd-field-error" id="fd-contact-message-error" hidden></span>
+                            </div>
+                            <p class="fd-contact-status" id="fd-contact-status" role="status" aria-live="polite" hidden></p>
+                            <div class="fd-contact-actions">
+                                <button type="submit" class="vs-btn" id="fd-contact-send">Send Message</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--==============================
     Ordering & delivery help
     ============================== -->
     <section class="space-bottom" id="ordering-help" aria-labelledby="fd-ordering-help-title">
