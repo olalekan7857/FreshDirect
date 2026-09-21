@@ -3020,3 +3020,44 @@ textarea:focus-visible,
     text-align: center;
   }
 }
+
+/* ---------- Scroll-to-top progress ring ----------
+   JS (wireScrollProgress in fresh-direct.js) injects an
+   .fd-scroll-progress SVG into each .scrollToTop anchor in place — no
+   markup changes. The ring fills with page-scroll progress: empty at
+   the top, a full circle at the bottom, shrinking back on scroll up.
+   Existing show/hide + click-to-top behavior (main.js) is untouched.
+   Follows --btn-size so the ring tracks the 40px mobile button too. */
+.scrollToTop .fd-scroll-progress {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--btn-size, 50px) + 14px);
+  height: calc(var(--btn-size, 50px) + 14px);
+  transform: translate(-50%, -50%) rotate(-90deg);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.fd-scroll-progress-track {
+  fill: none;
+  stroke: var(--secondary-color);
+  stroke-width: 4;
+  opacity: 0.28;
+}
+
+.fd-scroll-progress-bar {
+  fill: none;
+  stroke: var(--secondary-color);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.15s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fd-scroll-progress-bar {
+    transition: none;
+  }
+}

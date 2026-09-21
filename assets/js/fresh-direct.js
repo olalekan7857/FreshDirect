@@ -2802,6 +2802,77 @@
     });
   }
 
+  // Scroll-to-top progress ring. Enhances every .scrollToTop anchor in
+  // place (no markup changes): an SVG ring fills with page-scroll
+  // progress — empty at the top, a full circle at the bottom — and
+  // shrinks back when scrolling up. Existing show/hide + click-to-top
+  // behavior (main.js) is untouched; pages without the button no-op.
+  function wireScrollProgress() {
+    var buttons = document.querySelectorAll(".scrollToTop");
+    if (!buttons.length) {
+      return;
+    }
+    var SVG_NS = "http://www.w3.org/2000/svg";
+    var bars = [];
+    for (var i = 0; i < buttons.length; i++) {
+      if (buttons[i].hasAttribute("data-fd-progress")) {
+        continue;
+      }
+      buttons[i].setAttribute("data-fd-progress", "true");
+      var svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "fd-scroll-progress");
+      svg.setAttribute("viewBox", "0 0 64 64");
+      svg.setAttribute("aria-hidden", "true");
+      var track = document.createElementNS(SVG_NS, "circle");
+      track.setAttribute("class", "fd-scroll-progress-track");
+      track.setAttribute("cx", "32");
+      track.setAttribute("cy", "32");
+      track.setAttribute("r", "29");
+      var bar = document.createElementNS(SVG_NS, "circle");
+      bar.setAttribute("class", "fd-scroll-progress-bar");
+      bar.setAttribute("cx", "32");
+      bar.setAttribute("cy", "32");
+      bar.setAttribute("r", "29");
+      bar.setAttribute("pathLength", "100");
+      bar.setAttribute("stroke-dasharray", "100");
+      bar.setAttribute("stroke-dashoffset", "100");
+      svg.appendChild(track);
+      svg.appendChild(bar);
+      buttons[i].insertBefore(svg, buttons[i].firstChild);
+      bars.push(bar);
+    }
+    if (!bars.length) {
+      return;
+    }
+    var ticking = false;
+    function paint() {
+      ticking = false;
+      var max =
+        document.documentElement.scrollHeight - window.innerHeight;
+      var y =
+        window.pageYOffset || document.documentElement.scrollTop || 0;
+      var p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
+      var offset = String((100 - p * 100).toFixed(2));
+      for (var k = 0; k < bars.length; k++) {
+        bars[k].setAttribute("stroke-dashoffset", offset);
+      }
+    }
+    function requestPaint() {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(paint);
+      } else {
+        paint();
+      }
+    }
+    window.addEventListener("scroll", requestPaint, { passive: true });
+    window.addEventListener("resize", requestPaint);
+    paint();
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       wireWhatsApp();
@@ -2817,6 +2888,7 @@
       wireCheckout();
       wireConfirmation();
       wireContact();
+      wireScrollProgress();
     });
   } else {
     wireWhatsApp();
@@ -2832,5 +2904,6 @@
     wireCheckout();
     wireConfirmation();
     wireContact();
+    wireScrollProgress();
   }
 })();

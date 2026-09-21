@@ -40,6 +40,10 @@
          instead of serving a stale cached copy. Bump when this file
          changes again. -->
     <link rel="stylesheet" href="assets/css/fd-admin.css?v=6.0">
+    <!-- FreshDirect theme layer: light/dark tokens + dark surfaces (inert in Light mode) -->
+    <link rel="stylesheet" href="assets/css/fd-theme.css">
+    <!-- Apply the stored theme before first paint. Default is Light. -->
+    <script>try{var fdT=localStorage.getItem("freshdirect_theme_v1");if(fdT==="dark"){document.documentElement.setAttribute("data-theme","dark");}}catch(fdE){}</script>
 
 </head>
 
@@ -104,6 +108,10 @@
                 </button>
                 <h1 class="fd-admin-title">Order Details</h1>
                 <span class="fd-admin-context">Seller area &middot; order management</span>
+                <button type="button" class="icon-btn fd-theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode">
+                    <i class="fas fa-moon" data-theme-icon="moon" aria-hidden="true"></i>
+                    <i class="fas fa-sun" data-theme-icon="sun" aria-hidden="true" hidden></i>
+                </button>
             </header>
 
             <main class="fd-admin-content fd-dash" id="fd-admin-main" tabindex="-1">
@@ -260,6 +268,7 @@
     <!-- Admin JS only: deliberately NOT loading fresh-direct.js so the
          customer cart store can never leak into the admin. -->
     <script src="assets/js/fd-admin.js"></script>
+    <script src="assets/js/fd-theme.js"></script>
     <!-- Settings record (Stage 5: seller record kept in this browser;
          the order service below reads the saved WhatsApp number here). -->
     <script src="assets/js/fd-admin-settings-data.js"></script>
