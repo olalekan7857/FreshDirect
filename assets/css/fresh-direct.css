@@ -84,24 +84,21 @@ textarea:focus-visible,
   margin-right: 10px;
 }
 
-/* Image replacement for the leaf icon (mobile logo only): same 42px
-   circle footprint so the wordmark alignment never shifts. */
+/* Image logo: the mark is wider than tall, so the container keeps its natural
+   aspect instead of cropping it into a circle. Height-locked to the same
+   42px footprint as the old icon; width follows the artwork, capped so the
+   navbar layout is never pushed. */
 .fd-logo img.fd-logo-img {
-  width: 42px;
   height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: auto;
+  max-width: 96px;
+  object-fit: contain;
   flex: 0 0 auto;
   margin-right: 10px;
-  background: var(--white-color);
 }
 
 .fd-logo span {
   color: var(--theme-color);
-}
-
-.fd-logo:hover {
-  color: var(--title-color);
 }
 
 .footer-wrapper .fd-logo {
@@ -533,8 +530,9 @@ textarea:focus-visible,
   }
 
   .fd-logo img.fd-logo-img {
-    width: 36px;
     height: 36px;
+    width: auto;
+    max-width: 84px;
   }
 
   .hero-layout2 .hero-img {
@@ -1057,8 +1055,9 @@ textarea:focus-visible,
   }
 
   .fd-logo img.fd-logo-img {
-    width: 34px;
     height: 34px;
+    width: auto;
+    max-width: 80px;
   }
 }
 
