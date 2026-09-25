@@ -2810,3 +2810,135 @@
     font-size: 14px;
   }
 }
+
+/* ==========================================================================
+   SMALL-SCREEN SAFETY LAYER — admin responsive hardening, no redesign.
+   Complements the storefront layer in fresh-direct.css. Approved admin
+   card/table improvements above are untouched; rules below only adjust
+   spacing, wrapping and control sizing at narrow widths so the topbar,
+   cards, tables-as-cards, forms and buttons stay usable down to 320px.
+   Touch targets never drop below 40px. Dark-mode colors untouched.
+   ========================================================================== */
+
+/* ---------- A. Shared admin overflow guards (all viewports) ------------ */
+.fd-admin .fd-admin-topbar,
+.fd-admin .fd-prod-card-top,
+.fd-admin .fd-prod-card-foot,
+.fd-admin .fd-order-facts li {
+  min-width: 0;
+}
+
+.fd-admin .fd-admin-title {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.fd-admin .fd-admin-menu-btn,
+.fd-admin .fd-admin-topbar .fd-theme-toggle {
+  flex: 0 0 auto;
+}
+
+.fd-admin .fd-dash-card-value,
+.fd-admin .fd-prod-name,
+.fd-admin .fd-order-ref,
+.fd-admin .fd-orders-cust {
+  overflow-wrap: break-word;
+}
+
+/* ---------- B. Small mobile (<=575px): topbar + content breathing room - */
+@media (max-width: 575px) {
+  .fd-admin .fd-admin-topbar {
+    gap: 8px;
+    padding: 10px 14px;
+    min-height: 60px;
+  }
+
+  .fd-admin .fd-admin-title {
+    font-size: 20px;
+    flex: 1 1 auto;
+  }
+
+  .fd-admin .fd-admin-content {
+    padding: 18px 12px 36px 12px;
+  }
+
+  .fd-admin .fd-dash-grid {
+    gap: 10px;
+  }
+
+  .fd-admin .fd-dash-card {
+    padding: 14px 12px;
+  }
+
+  .fd-admin .fd-prod-card {
+    padding: 16px 14px;
+  }
+
+  .fd-admin .fd-order-facts strong {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ---------- C. Very small phones (<=360px): tighten, never tiny -------- */
+@media (max-width: 360px) {
+  .fd-admin .fd-admin-menu-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .fd-admin .fd-admin-topbar .fd-theme-toggle {
+    --icon-size: 40px;
+  }
+
+  .fd-admin .fd-admin-card {
+    padding: 22px 16px;
+  }
+
+  .fd-admin .fd-prod-variants li {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .fd-admin .fd-edit-variant-top {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- D. Smallest realistic phones (<=330px, covers 320px) ------- */
+@media (max-width: 330px) {
+  .fd-admin .fd-admin-topbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .fd-admin .fd-admin-title {
+    font-size: 18px;
+  }
+
+  .fd-admin .fd-admin-content {
+    padding: 14px 10px 32px 10px;
+  }
+
+  .fd-admin .fd-dash-grid {
+    gap: 8px;
+  }
+
+  .fd-admin .fd-dash-card-value {
+    font-size: 24px;
+  }
+
+  .fd-admin .fd-prod-card {
+    padding: 14px 12px;
+  }
+
+  .fd-admin .fd-prod-card-foot .fd-prod-actions .fd-prod-btn {
+    padding: 6px 8px;
+    font-size: 12.5px;
+    min-height: 40px;
+  }
+
+  .fd-admin .fd-dash-section {
+    padding: 16px 12px;
+  }
+}

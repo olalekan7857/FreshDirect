@@ -1033,6 +1033,11 @@ textarea:focus-visible,
     font-size: 12px;
     padding: 5px 4px;
     min-height: 34px;
+    /* Mobile cards are ~60px per button: the desktop 9999px pill turns
+       these into ovals, so they take a softened rectangle radius instead.
+       Tight leading keeps a wrapped "View / product" reading as one label. */
+    border-radius: 14px;
+    line-height: 1.3;
   }
 
   #featured .fd-badge {
@@ -1565,6 +1570,9 @@ textarea:focus-visible,
     font-size: 12px;
     padding: 5px 4px;
     min-height: 34px;
+    /* Same mobile radius + leading as Home (shared card system, one look). */
+    border-radius: 14px;
+    line-height: 1.3;
   }
 
   #fd-toast-region {
@@ -2154,6 +2162,8 @@ textarea:focus-visible,
     padding: 5px 4px;
     min-height: 38px;
     margin: 0;
+    border-radius: 14px;
+    line-height: 1.3;
   }
 }
 
@@ -3059,5 +3069,416 @@ textarea:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .fd-scroll-progress-bar {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   SMALL-SCREEN SAFETY LAYER — responsive hardening, no redesign.
+   Hierarchy: normal mobile (existing rules above) -> small (<=575px) ->
+   very small (<=360px) -> smallest realistic phones (<=330px, covers 320px).
+   Every rule below is layout/spacing/sizing only: typography scale, brand
+   colors, dark-mode palette, radius, animations and component designs are
+   untouched. Touch targets never drop below 40px.
+   Root causes addressed:
+     - mobile header: 3 fixed controls + gaps + full wordmark exceeded
+       ~296px of usable width at 320px viewports;
+     - fixed .vs-btn padding / 2-col grid gutters left cards with ~112px
+       of content at 320px;
+     - toolbar / PDP / cart / checkout rows had no <=360px reflow step.
+   ========================================================================== */
+
+/* ---------- A. Shared overflow guards (all viewports, no visual change) --
+   min-width:0 lets flex/grid children shrink instead of forcing page-wide
+   overflow; long names/refs/errors wrap inside their containers. */
+.vs-header .header-logo,
+.vs-header .menu-area .col,
+.fd-header-actions,
+.fd-shop-meta-row,
+.fd-cartpage-top,
+.fd-confirm-head,
+.fd-checkout-lines li > div {
+  min-width: 0;
+}
+
+.vs-btn,
+.fd-whatsapp-btn,
+.fd-ghost-btn,
+.fd-view-cart-btn,
+.fd-cat-pill,
+.fd-variant-btn,
+.fd-check-radio span,
+.fd-field-error,
+.fd-checkout-status,
+.fd-contact-status,
+.fd-confirm-ref,
+.fd-cartpage-id strong,
+.product-style1 .product-title {
+  overflow-wrap: break-word;
+}
+
+.product-style1 .product-img img,
+.fd-pdp-main-img img,
+.fd-cartpage-img img,
+.fd-404-produce img {
+  max-width: 100%;
+}
+
+/* Header controls must never shrink into each other: the logo column is
+   the only flexible item; every button keeps its size and spacing. */
+.fd-header-actions {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.fd-header-actions .icon-btn,
+.fd-header-actions .vs-menu-toggle {
+  flex: 0 0 auto;
+}
+
+.vs-header .header-logo .fd-logo {
+  max-width: 100%;
+}
+
+/* ---------- B. Small mobile (<=575px): gain room without going tiny ---- */
+@media (max-width: 575px) {
+  /* Header: one calm step down; controls stay >=42px.
+     The Bootstrap .col-auto gutters (12px each side per column) cost more
+     than the buttons at this width, so they step down first — the logo
+     and touch targets are the last things to shrink. */
+  .vs-header .menu-area > .container > .row > .col-auto {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .fd-header-actions {
+    gap: 10px;
+  }
+
+  .fd-header-actions .icon-btn {
+    --icon-size: 42px;
+  }
+
+  .header-layout1 .menu-area {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .vs-header .vs-menu-toggle {
+    width: 44px;
+    height: 44px;
+    font-size: 21px;
+  }
+
+  .fd-cart-btn .badge {
+    min-width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  /* Buttons: slightly narrower pill padding; height/comfort unchanged. */
+  .vs-btn {
+    padding: 16px 24px;
+    font-size: 15px;
+    max-width: 100%;
+  }
+
+  .fd-whatsapp-btn,
+  .fd-ghost-btn,
+  .fd-view-cart-btn {
+    padding: 11px 18px;
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  /* Product grids: reclaim 8px of gutter so 2-col cards keep content. */
+  #fd-home-grid,
+  #fd-shop-grid,
+  #fd-pdp-related {
+    --bs-gutter-x: 1rem;
+  }
+
+  /* Shop toolbar meta row: count owns its row; controls share the next. */
+  .fd-shop-meta-row {
+    gap: 8px 10px;
+  }
+
+  .fd-view-toggle {
+    gap: 6px;
+  }
+
+  /* Cart / checkout / confirm: keep card air, reduce outer padding only. */
+  .fd-cartpage-item {
+    padding: 14px;
+  }
+
+  .fd-checkout-card {
+    padding: 22px 18px;
+  }
+
+  .fd-confirm-card {
+    padding: 26px 20px;
+  }
+}
+
+/* ---------- C. Narrow phones (<=400px): header breathing room ---------- */
+@media (max-width: 400px) {
+  .vs-header .menu-area > .container > .row > .col-auto {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .fd-header-actions {
+    gap: 8px;
+  }
+
+  .fd-header-actions .icon-btn {
+    --icon-size: 40px;
+  }
+
+  .vs-header .vs-menu-toggle {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+
+  .fd-logo {
+    font-size: 19px;
+  }
+
+  .fd-logo i {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+    margin-right: 8px;
+  }
+
+  .fd-logo img.fd-logo-img {
+    height: 30px;
+    max-width: 72px;
+    margin-right: 8px;
+  }
+
+  #fd-home-grid,
+  #fd-shop-grid,
+  #fd-pdp-related {
+    --bs-gutter-x: 0.75rem;
+  }
+
+  .fd-shop-toolbar {
+    padding: 12px;
+  }
+
+  .fd-pdp-name {
+    font-size: 24px;
+  }
+
+  .fd-pdp-price {
+    font-size: 24px;
+  }
+}
+
+/* ---------- D. Very small phones (<=360px): targeted reflow ------------- */
+@media (max-width: 360px) {
+  .fd-logo {
+    font-size: 18px;
+  }
+
+  .vs-btn {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+
+  /* Grid cards: tighter inner padding/gaps; type steps already set above. */
+  #featured .product-style1,
+  #fd-shop-grid .product-style1,
+  #fd-pdp-related .product-style1 {
+    padding: 10px 8px 12px;
+  }
+
+  #featured .fd-buy-row,
+  #fd-shop-grid .fd-buy-row,
+  #fd-pdp-related .fd-buy-row {
+    gap: 6px;
+  }
+
+  #featured .product-style1 .product-img img,
+  #fd-shop-grid .product-style1 .product-img img,
+  #fd-pdp-related .product-style1 .product-img img {
+    max-height: 110px;
+  }
+
+  /* List view: smaller thumb so text keeps a readable column. */
+  :is(#fd-shop-grid, #fd-home-grid, #fd-pdp-related).is-list .product-style1 .product-img {
+    flex-basis: 80px;
+    width: 80px;
+    height: 88px;
+  }
+
+  /* PDP: keep stepper + buttons comfortable but compact. */
+  .fd-pdp-gallery {
+    padding: 16px 12px;
+  }
+
+  .fd-variant-btn {
+    padding: 10px 16px;
+    min-height: 44px;
+  }
+
+  .fd-pdp-qty button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fd-pdp-facts {
+    padding: 16px;
+  }
+
+  /* Cart page: smaller thumb, wrapping top row so price never collides. */
+  .fd-cartpage-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .fd-cartpage-top {
+    flex-wrap: wrap;
+  }
+
+  .fd-cartpage-line {
+    font-size: 15px;
+  }
+
+  /* Checkout: inputs stay >=48px tall; errors wrap naturally. */
+  #fd-checkout-form .form-control,
+  #fd-contact-form .form-control {
+    min-height: 48px;
+  }
+
+  .fd-check-radio span {
+    min-width: 0;
+  }
+
+  .fd-checkout-lines li > strong {
+    white-space: normal;
+    text-align: right;
+  }
+
+  /* Confirmation: smaller icon/headline, wrapping reference. */
+  .fd-confirm-head h2 {
+    font-size: 20px;
+  }
+
+  .fd-confirm-ref {
+    overflow-wrap: anywhere;
+  }
+
+  /* Category cells + footer contact lines wrap safely at this width. */
+  .fd-cat-grid {
+    gap: 20px 10px;
+  }
+
+  .fd-footer-contact li {
+    overflow-wrap: break-word;
+  }
+}
+
+/* ---------- E. Smallest realistic phones (<=330px, covers 320px) --------
+   Final safety net: only spacing/flex behavior changes. Controls stay
+   >=40px; nothing becomes tiny — layouts reflow instead. */
+@media (max-width: 330px) {
+  /* Gutters step down last: container 10px, header columns 4px. Combined
+     with the 40px controls + 6px gaps + 17px wordmark, the full header row
+     (logo + 3 controls) fits 320px viewports with room to spare. */
+  .vs-header .menu-area > .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .vs-header .menu-area > .container > .row > .col-auto {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .fd-header-actions {
+    gap: 6px;
+  }
+
+  .fd-logo {
+    font-size: 17px;
+  }
+
+  .fd-logo img.fd-logo-img {
+    height: 28px;
+    max-width: 64px;
+    margin-right: 6px;
+  }
+
+  .fd-logo i {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    margin-right: 6px;
+  }
+
+  .vs-header .vs-menu-toggle {
+    width: 40px;
+    height: 40px;
+    font-size: 19px;
+  }
+
+  /* Grid cards keep 2 columns: shave padding, never the touch targets. */
+  #featured .fd-add-btn,
+  #fd-shop-grid .fd-add-btn,
+  #fd-pdp-related .fd-add-btn {
+    padding: 9px 8px;
+    min-height: 40px;
+  }
+
+  :is(#fd-shop-grid, #fd-home-grid, #fd-pdp-related).is-list .product-style1 {
+    gap: 8px;
+    padding: 10px 8px;
+  }
+
+  :is(#fd-shop-grid, #fd-home-grid, #fd-pdp-related).is-list .product-style1 .product-img {
+    flex-basis: 76px;
+    width: 76px;
+    height: 84px;
+  }
+
+  .fd-shop-meta-row .fd-shop-select {
+    flex: 1 1 100%;
+  }
+
+  .fd-shop-meta-row .fd-shop-select .form-select {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fd-cartpage-item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .fd-checkout-card,
+  .fd-cart-summary,
+  .fd-confirm-card {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .fd-pdp-name {
+    font-size: 22px;
+  }
+}
+
+/* ---------- F. Short mobile heights: reduce vertical air only ----------- */
+@media (max-height: 500px) and (max-width: 767px) {
+  .hero-layout2 .hero-slide {
+    padding: 40px 0 8px;
+  }
+
+  #fd-main .space {
+    padding-top: 36px;
+    padding-bottom: 36px;
   }
 }
