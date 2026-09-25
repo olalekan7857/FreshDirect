@@ -3471,6 +3471,16 @@ textarea:focus-visible,
   }
 }
 
+/* ---------- Blog nav fit: six desktop links stay on one row --------------
+   The Blog item brings .main-menu to six links. Below 1300px the item
+   gutters step from 16px to 10px so the menu never wraps mid-header.
+   Typography, colors and behavior are untouched. */
+@media (max-width: 1300px) {
+  .header-layout1 .main-menu > ul > li {
+    margin: 0 10px;
+  }
+}
+
 /* ---------- F. Short mobile heights: reduce vertical air only ----------- */
 @media (max-height: 500px) and (max-width: 767px) {
   .hero-layout2 .hero-slide {
