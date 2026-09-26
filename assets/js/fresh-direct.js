@@ -822,8 +822,12 @@
       }
     }
 
-    // Category pills derive from the actual products (backend-ready: new
-    // categories appear automatically when the backend adds products).
+    // Category pills link to the category page (backend-ready: Django
+    // filters product-category.html by ?category=<name> server-side).
+    // Clicking a pill navigates instead of client-side filtering, so the
+    // grid on this page only responds to search / availability / sort.
+    // The ?category=… deep link below still highlights the matching pill
+    // through aria-pressed so the current category reads clearly.
     function buildPills() {
       if (!pills) {
         return;
@@ -837,39 +841,27 @@
       }
       seen.sort();
       pills.innerHTML = "";
-      var all = document.createElement("button");
-      all.type = "button";
+      var all = document.createElement("a");
       all.className = "fd-cat-pill";
       all.textContent = "All";
+      all.setAttribute("href", "product.html");
       all.setAttribute("data-cat", "all");
       all.setAttribute("aria-pressed", "true");
       pills.appendChild(all);
       for (var j = 0; j < seen.length; j++) {
         (function (cat) {
-          var b = document.createElement("button");
-          b.type = "button";
+          var b = document.createElement("a");
           b.className = "fd-cat-pill";
           b.textContent = cat;
+          b.setAttribute(
+            "href",
+            "product-category.html?category=" + encodeURIComponent(cat)
+          );
           b.setAttribute("data-cat", cat.toLowerCase());
           b.setAttribute("aria-pressed", "false");
           pills.appendChild(b);
         })(seen[j]);
       }
-      pills.addEventListener("click", function (ev) {
-        var btn = ev.target.closest("[data-cat]");
-        if (!btn) {
-          return;
-        }
-        state.cat = btn.getAttribute("data-cat");
-        var allBtns = pills.querySelectorAll("[data-cat]");
-        for (var k = 0; k < allBtns.length; k++) {
-          allBtns[k].setAttribute(
-            "aria-pressed",
-            allBtns[k] === btn ? "true" : "false"
-          );
-        }
-        apply();
-      });
     }
 
     var debounce = null;

@@ -1197,6 +1197,14 @@ textarea:focus-visible,
   transition: all ease 0.4s;
 }
 
+/* Pills are links to product-category.html (Django filters server-side),
+   so anchors reuse the same pill look without link underlines. */
+a.fd-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 .fd-cat-pill:hover {
   border-color: var(--secondary-color);
   color: var(--secondary-color);
@@ -3491,4 +3499,227 @@ textarea:focus-visible,
     padding-top: 36px;
     padding-bottom: 36px;
   }
+}
+
+/* ==========================================================================
+   FRESHDRECT NAV ACTIVE STATE + FOOTER DIVIDERS + SOLID BUTTONS
+   - Current-page nav links highlight in theme green (--secondary-color)
+     via aria-current="page" (Django-ready: set aria-current per page).
+   - Footer top contact cells: border-right dividers on desktop (none on
+     last child), border-bottom stacking dividers on mobile.
+   - .vs-btn becomes a solid orange button (--theme-color) for contrast.
+   ========================================================================== */
+
+/* Active nav link: desktop + mobile, current page in FreshDirect green. */
+.main-menu.menu-style1 > ul > li > a[aria-current="page"],
+.main-menu a[aria-current="page"] {
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+.vs-mobile-menu ul li a[aria-current="page"] {
+  color: var(--secondary-color) !important;
+  font-weight: 700;
+}
+
+/* Solid primary buttons: orange fill, readable text, same pill shape. */
+.vs-btn {
+  background-color: var(--theme-color);
+  border-color: var(--theme-color);
+  color: var(--white-color);
+}
+
+.vs-btn:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white-color);
+}
+
+/* Category cards wrapped in a full-card link. */
+.fd-cat-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--fd-radius);
+}
+
+.fd-cat-card-link:hover .categorie-title,
+.fd-cat-card-link:focus-visible .categorie-title {
+  color: var(--secondary-color);
+}
+
+/* Footer top dividers: same 3px divider as mobile, vertical on desktop.
+   Mobile stacks the cells so the divider sits under each cell; desktop
+   places the cells side by side so the same divider sits to the right
+   of each cell (none on the last child). */
+@media (min-width: 992px) {
+  .footer-wrapper .footer-top .row > div {
+    border-right: 3px solid rgba(255, 217, 0, 0.3215686275);
+    padding-right: 30px;
+  }
+
+  .footer-wrapper .footer-top .row > div:last-child {
+    border-right: none;
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+  }
+
+  .footer-wrapper .footer-top .media-style1 {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .footer-wrapper .footer-top .row > div {
+    border-right: none;
+  }
+
+  .footer-wrapper .footer-top .media-style1 {
+    border-bottom: 3px solid rgba(255, 217, 0, 0.3215686275);
+  }
+
+  .footer-wrapper .footer-top .row > div:last-child .media-style1 {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+/* Shop / category pagination (Django-ready, mirrors blog pagination). */
+.fd-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.fd-page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+  background: var(--white-color);
+  color: var(--title-color);
+  font-family: var(--title-font);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all ease 0.3s;
+}
+
+a.fd-page-link:hover {
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+.fd-page-link.is-current {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white-color);
+}
+
+/* The current page keeps white text on green when hovered — never
+   green-on-green. */
+a.fd-page-link.is-current:hover {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white-color);
+}
+
+.fd-page-link.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Dark mode follows the blog pagination tokens so page numbers stay
+   readable on dark surfaces (storefront + admin share this block). */
+html[data-theme="dark"] .fd-page-link {
+  background: var(--fd-surface);
+  border-color: var(--fd-hairline);
+  color: var(--fd-text);
+}
+
+html[data-theme="dark"] a.fd-page-link:hover {
+  border-color: var(--fd-brand-green-text);
+  color: var(--fd-brand-green-text);
+}
+
+html[data-theme="dark"] .fd-page-link.is-current,
+html[data-theme="dark"] a.fd-page-link.is-current:hover {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white-color);
+}
+
+/* Admin delete affordance + modal (scoped, reuses tokens). */
+.fd-admin .fd-prod-btn.is-danger {
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+.fd-admin a.fd-prod-btn.is-danger:hover,
+.fd-admin button.fd-prod-btn.is-danger:hover {
+  background: var(--error-color);
+  border-color: var(--error-color);
+  color: var(--white-color);
+}
+
+.fd-modal[hidden] {
+  display: none;
+}
+
+.fd-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.fd-modal-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.fd-modal-card {
+  position: relative;
+  width: min(440px, 100%);
+  background: var(--white-color);
+  border-radius: 16px;
+  padding: 26px 24px;
+  text-align: center;
+}
+
+.fd-modal-card h2 {
+  font-size: 20px;
+  margin: 0 0 10px 0;
+}
+
+.fd-modal-card p {
+  font-size: 14.5px;
+  margin: 0 0 20px 0;
+}
+
+.fd-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fd-modal-actions .vs-btn.is-danger-btn {
+  background-color: var(--error-color);
+  border-color: var(--error-color);
+  color: var(--white-color);
 }

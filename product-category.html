@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Shop Fresh Produce | FreshDirect</title>
+    <title>Shop Vegetables | FreshDirect</title>
     <meta name="author" content="FreshDirect">
-    <meta name="description" content="Browse fresh vegetables, fruits, peppers, tomatoes and onions from FreshDirect. Shop online or order through WhatsApp — serving the FUNAAB and Abeokuta community.">
+    <meta name="description" content="Shop fresh Vegetables from FreshDirect. Browse what is available right now, add items to your cart, or order through WhatsApp.">
     <meta name="keywords" content="FreshDirect, shop farm produce, vegetables, fruits, pepper, tomatoes, onions, FUNAAB, Abeokuta">
     <meta name="robots" content="INDEX,FOLLOW">
-    <meta property="og:title" content="Shop Fresh Produce | FreshDirect">
+    <meta property="og:title" content="Shop Vegetables | FreshDirect">
     <meta property="og:description" content="Browse fresh farm produce from FreshDirect. Shop online or order through WhatsApp.">
     <meta property="og:type" content="website">
 
@@ -220,12 +220,16 @@
             <nav aria-label="Breadcrumb">
                 <ol class="fd-breadcrumb">
                     <li><a href="index.html">Home</a></li>
-                    <li aria-current="page">Shop</li>
+                    <li><a href="product.html">Shop</a></li>
+                    <!-- Django: category.name -->
+                    <li aria-current="page">Vegetables</li>
                 </ol>
             </nav>
             <span class="sec-subtitle">One farm, direct to you</span>
-            <h1 class="sec-title">Shop Fresh Produce</h1>
-            <p>Browse what is available from FreshDirect right now. Add items to your cart, or order anything through WhatsApp.</p>
+            <!-- Django: category.name renders here (static example shows Vegetables).
+                 Same product grid, toolbar, and card markup as product.html. -->
+            <h1 class="sec-title">Shop Vegetables</h1>
+            <p>Browse fresh Vegetables available from FreshDirect right now. Add items to your cart, or order anything through WhatsApp.</p>
         </div>
     </div>
 
@@ -531,11 +535,11 @@
 
             <!-- Django pagination will populate page numbers and prev/next
                  availability (?page=2). This static example shows page 1. -->
-            <nav class="fd-pagination" aria-label="Shop pagination">
+            <nav class="fd-pagination" aria-label="Category pagination">
                 <span class="fd-page-link is-disabled" aria-disabled="true">Previous</span>
-                <a class="fd-page-link is-current" href="product.html" aria-current="page">1</a>
-                <a class="fd-page-link" href="product.html?page=2">2</a>
-                <a class="fd-page-link" href="product.html?page=2">Next</a>
+                <a class="fd-page-link is-current" href="product-category.html?category=Vegetables" aria-current="page">1</a>
+                <a class="fd-page-link" href="product-category.html?category=Vegetables&page=2">2</a>
+                <a class="fd-page-link" href="product-category.html?category=Vegetables&page=2">Next</a>
             </nav>
         </div>
     </div>

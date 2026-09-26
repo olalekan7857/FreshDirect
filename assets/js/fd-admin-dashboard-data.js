@@ -57,6 +57,12 @@
     { id: "mock-scent-leaves", name: "Scent Leaves", category: "Herbs & Spices", variantLabel: "Per bunch", status: "in" }
   ];
 
+  /* Static development stand-ins for the two new overview metrics.
+     Django will replace these with real queries (blog post count,
+     unread product-review count). Numbers are illustrative only. */
+  var BLOG_POSTS = 6;
+  var UNREAD_REVIEWS = 3;
+
   var ORDERS = [
     {
       ref: "FD-7K2PQA",
@@ -106,6 +112,8 @@
     sourceNote:
       "Illustrative placeholders for layout only. Replace with Django queries.",
     products: PRODUCTS,
-    orders: ORDERS
+    orders: ORDERS,
+    blogPosts: BLOG_POSTS,
+    unreadReviews: UNREAD_REVIEWS
   };
 })();

@@ -1650,7 +1650,8 @@
   gap: 0 16px;
 }
 
-.fd-admin #fd-ed-form textarea.form-control {
+.fd-admin #fd-ed-form textarea.form-control,
+.fd-admin #fd-bed-form textarea.form-control {
   height: auto;
   min-height: 110px;
   padding-top: 14px;
@@ -1658,7 +1659,8 @@
   resize: vertical;
 }
 
-.fd-admin #fd-ed-form .form-select {
+.fd-admin #fd-ed-form .form-select,
+.fd-admin #fd-bed-form .form-select {
   min-height: 52px;
   border-radius: 12px;
 }

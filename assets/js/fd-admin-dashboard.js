@@ -15,9 +15,9 @@
      snapshot shape { summary, recentOrders, products, attentionItems,
      meta }; every render*() function below is reused untouched.
 
-   Snapshot shape:
-     summary: { totalProducts, availableProducts, outOfStockProducts,
-                ordersNeedingAttention }
+    Snapshot shape:
+      summary: { totalProducts, availableProducts, outOfStockProducts,
+                 ordersNeedingAttention, blogPosts, unreadReviews }
      recentOrders: [{ ref, customer, placedAt, total, paymentStatus,
                       orderStatus }] (newest first, max 5)
      products: [{ id, name, category, variantLabel, status }]
@@ -276,7 +276,11 @@
         totalProducts: products.length,
         availableProducts: available,
         outOfStockProducts: outOfStock,
-        ordersNeedingAttention: needingAttention
+        ordersNeedingAttention: needingAttention,
+        /* Static stand-ins until Django owns them: blog post count and
+           unread review count come from the backend in production. */
+        blogPosts: typeof mock.blogPosts === "number" ? mock.blogPosts : 0,
+        unreadReviews: typeof mock.unreadReviews === "number" ? mock.unreadReviews : 0
       },
       recentOrders: orders.slice(0, MAX_ORDERS),
       products: products,
@@ -346,6 +350,18 @@
         label: "Orders needing attention",
         value: String(summary.ordersNeedingAttention),
         context: "Awaiting your reply or verification."
+      },
+      {
+        icon: "fas fa-newspaper",
+        label: "Blog posts",
+        value: String(summary.blogPosts || 0),
+        context: "Published articles on the blog."
+      },
+      {
+        icon: "fas fa-star",
+        label: "Unread reviews",
+        value: String(summary.unreadReviews || 0),
+        context: "Customer reviews awaiting review."
       }
     ];
     var html = "";

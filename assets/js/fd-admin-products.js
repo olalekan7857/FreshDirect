@@ -279,8 +279,8 @@
      Identity (thumb + name + category) leads, the availability pill sits
      top-right, borderless chips pair each variant label with its own
      price, and the foot holds the honest price range plus actions.
-     Edit links to the product editor (?id= stable product ID). There is
-     intentionally no Delete control. */
+     Edit links to the product editor (?id= stable product ID). Delete
+     opens a confirmation modal; the backend performs the real delete. */
   function variantChips(row) {
     if (!row.variantCount) {
       return '<p class="fd-prod-no-variants">No variants</p>';
@@ -372,6 +372,14 @@
       esc(row.name) +
       ' in the product editor">' +
       '<i class="far fa-edit" aria-hidden="true"></i>Edit</a>' +
+      '<button type="button" class="fd-prod-btn is-danger" data-delete-id="' +
+      esc(row.id) +
+      '" data-delete-name="' +
+      esc(row.name) +
+      '" aria-label="Delete ' +
+      esc(row.name) +
+      '">' +
+      '<i class="far fa-trash-alt" aria-hidden="true"></i>Delete</button>' +
       "</div>" +
       "</div>" +
       "</li>"
@@ -568,6 +576,113 @@
     });
   }
 
+  /* Delete confirmation modal: Django performs the real deletion.
+     Static demo removes the card from the current view (and drops any
+     seller-kept copy) so the confirmation is truthful in this browser. */
+  var pendingDeleteId = null;
+  var pendingDeleteName = "";
+  var lastDeleteFocus = null;
+
+  function openDeleteModal(id, name) {
+    var modal = el("fd-delete-modal");
+    var text = el("fd-delete-text");
+    if (!modal) {
+      return;
+    }
+    pendingDeleteId = id;
+    pendingDeleteName = name || id;
+    if (text) {
+      text.textContent = '"' + pendingDeleteName + '" will be permanently removed. This cannot be undone.';
+    }
+    lastDeleteFocus = document.activeElement;
+    modal.removeAttribute("hidden");
+    var cancel = el("fd-delete-cancel");
+    if (cancel) {
+      cancel.focus();
+    }
+  }
+
+  function closeDeleteModal() {
+    var modal = el("fd-delete-modal");
+    if (!modal) {
+      return;
+    }
+    modal.setAttribute("hidden", "");
+    pendingDeleteId = null;
+    if (lastDeleteFocus && lastDeleteFocus.focus) {
+      try {
+        lastDeleteFocus.focus();
+      } catch (e) {}
+    }
+  }
+
+  function wireDeleteModal() {
+    var list = el("fd-prod-list");
+    var modal = el("fd-delete-modal");
+    if (!list || !modal) {
+      return;
+    }
+    list.addEventListener("click", function (ev) {
+      var btn = ev.target && ev.target.closest ? ev.target.closest("[data-delete-id]") : null;
+      if (!btn) {
+        return;
+      }
+      openDeleteModal(btn.getAttribute("data-delete-id"), btn.getAttribute("data-delete-name"));
+    });
+    var cancel = el("fd-delete-cancel");
+    var scrim = el("fd-delete-scrim");
+    var confirm = el("fd-delete-confirm");
+    if (cancel) {
+      cancel.addEventListener("click", closeDeleteModal);
+    }
+    if (scrim) {
+      scrim.addEventListener("click", closeDeleteModal);
+    }
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && modal && !modal.hasAttribute("hidden")) {
+        closeDeleteModal();
+      }
+    });
+    if (confirm) {
+      confirm.addEventListener("click", function () {
+        if (!pendingDeleteId) {
+          closeDeleteModal();
+          return;
+        }
+        /* Drop any seller-kept copy so a reload stays consistent. */
+        try {
+          if (window.FreshDirectAdminStore && window.FreshDirectAdminStore.isLocal(pendingDeleteId)) {
+            var store = null;
+            try {
+              store = window.localStorage;
+            } catch (e) {
+              store = null;
+            }
+            if (store) {
+              var raw = store.getItem(window.FreshDirectAdminStore.key);
+              if (raw) {
+                var data = JSON.parse(raw);
+                if (data && data.products && data.products[pendingDeleteId]) {
+                  delete data.products[pendingDeleteId];
+                  store.setItem(window.FreshDirectAdminStore.key, JSON.stringify(data));
+                }
+              }
+            }
+          }
+        } catch (e) {}
+        /* Remove from the current view; Django deletes the real row. */
+        for (var i = 0; i < allRows.length; i++) {
+          if (allRows[i].id === pendingDeleteId) {
+            allRows.splice(i, 1);
+            break;
+          }
+        }
+        closeDeleteModal();
+        applyAndRender();
+      });
+    }
+  }
+
   function initWith(scenario) {
     showLoading(true);
     var rows;
@@ -613,6 +728,7 @@
     }
     wireToolbar();
     wireRetry();
+    wireDeleteModal();
     initWith(readScenario());
   }
 

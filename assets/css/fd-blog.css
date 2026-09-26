@@ -334,6 +334,14 @@ a.fd-page-link:hover {
   color: var(--white-color);
 }
 
+/* The current page keeps white text on green when hovered — never
+   green-on-green. */
+a.fd-page-link.is-current:hover {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white-color);
+}
+
 .fd-page-link.is-disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -350,17 +358,16 @@ html[data-theme="dark"] a.fd-page-link:hover {
   color: var(--fd-brand-green-text);
 }
 
-html[data-theme="dark"] .fd-page-link.is-current {
+html[data-theme="dark"] .fd-page-link.is-current,
+html[data-theme="dark"] a.fd-page-link.is-current:hover {
   background: var(--secondary-color);
   border-color: var(--secondary-color);
   color: var(--white-color);
 }
 
-@media (max-width: 767px) {
-  .fd-page-link {
-    border-radius: 14px;
-  }
-}
+/* Pagination keeps its desktop pill radius on mobile (no reduction).
+   Only product-card View/WhatsApp links take the softened 14px radius
+   on small screens (see fresh-direct.css product-card rules). */
 
 /* ---------- Load more row ---------- */
 .fd-blog-foot {
@@ -928,9 +935,9 @@ html[data-theme="dark"] .fd-post-share-bottom {
     border-radius: 16px;
   }
 
-  .fd-post-more {
-    border-radius: 14px;
-  }
+  /* .fd-post-more keeps its desktop pill radius on mobile (no reduction).
+     Only product-card View/WhatsApp links take the softened 14px radius
+     on small screens (see fresh-direct.css product-card rules). */
 
   .fd-post-header h1 {
     font-size: 27px;
