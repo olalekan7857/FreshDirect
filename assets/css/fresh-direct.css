@@ -3489,6 +3489,63 @@ a.fd-cat-pill {
   }
 }
 
+/* ---------- Compact desktop/tablet header (lg band only) ----------------
+   The desktop nav appears at >=992px (d-lg-block), but between 992px and
+   1200px the 960px container cannot fit the logo + six long nav labels +
+   the full "Order on WhatsApp" button + toggle/cart in one calm row.
+   This band keeps the desktop nav on one row by switching the header
+   WhatsApp control to icon-only and reclaiming a little horizontal
+   padding. Large desktop (>=1200px) and mobile (<992px) are untouched.
+   The label text is visually hidden with an sr-only clip (not
+   display:none), so the link keeps its accessible name and destination. */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .header-layout1 .header-icons.fd-header-actions .fd-whatsapp-btn {
+    position: relative;
+    padding: 12px 14px;
+  }
+
+  .header-layout1 .header-icons.fd-header-actions .fd-whatsapp-btn span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Slightly reduced horizontal padding so the nav has more usable room:
+     outer menu shell, container gutters, middle column and action gaps. */
+  .header-layout1 .menu-area {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .header-layout1 .menu-area > .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .header-layout1 .menu-area > .container > .row > .col {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .header-layout1 .header-icons.fd-header-actions {
+    gap: 10px;
+  }
+
+  .header-layout1 .main-menu > ul > li {
+    margin: 0 8px;
+  }
+
+  .header-layout1 .main-menu > ul {
+    white-space: nowrap;
+  }
+}
+
 /* ---------- F. Short mobile heights: reduce vertical air only ----------- */
 @media (max-height: 500px) and (max-width: 767px) {
   .hero-layout2 .hero-slide {
