@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Settings renderer (Stage 5)
+   Harvest Castle Admin — Settings renderer (Stage 5)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store or fresh-direct.js.
@@ -349,7 +349,7 @@
       link.setAttribute("hidden", "");
     } else {
       link.removeAttribute("hidden");
-      link.setAttribute("href", "https://wa.me/" + digits + "?text=" + encodeURIComponent("Hello FreshDirect!"));
+      link.setAttribute("href", "https://wa.me/" + digits + "?text=" + encodeURIComponent("Hello Harvest Castle!"));
       link.setAttribute("target", "_blank");
       link.setAttribute("rel", "noopener");
     }

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Order source boundary (Stage 4: Order Management)
+   Harvest Castle Admin — Order source boundary (Stage 4: Order Management)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store and never loads fresh-direct.js, so customer
@@ -549,7 +549,7 @@
   function getOrderWhatsAppHref(order) {
     var statusLabel = orderStatusMeta(order.status).label;
     var lines = [
-      "Hello! Following up on FreshDirect order " + order.id + ".",
+      "Hello! Following up on Harvest Castle order " + order.id + ".",
       "",
       "Customer: " + (order.customer.name || "—"),
       "Items: " + itemCount(order) + " (" + fmtNaira(order.total) + ")",

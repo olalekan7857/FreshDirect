@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Stage 1 (admin shell + login controller)
+   Harvest Castle Admin — Stage 1 (admin shell + login controller)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. This file NEVER touches the
    customer cart (no dependency on fresh-direct.js cart store) so customer
@@ -116,7 +116,7 @@
 
   function notConfigured(op) {
     var err = new Error(
-      "FreshDirect admin authentication is not connected yet (" + op + ")."
+      "Harvest Castle admin authentication is not connected yet (" + op + ")."
     );
     err.code = AUTH_NOT_CONFIGURED;
     return err;

@@ -1,7 +1,7 @@
 /* ==========================================================================
-   FreshDirect — Light/Dark theme controller (Stage: global theme system)
+   Harvest Castle — Light/Dark theme controller (Stage: global theme system)
    --------------------------------------------------------------------------
-   Zero-dependency, vanilla JS. Loaded on every FreshDirect page AFTER the
+   Zero-dependency, vanilla JS. Loaded on every Harvest Castle page AFTER the
    page's own scripts (storefront: after fresh-direct.js; admin: after
    fd-admin.js) so it can never interfere with cart, checkout, menu or
    admin behaviour. All theme state lives on <html data-theme="dark">;

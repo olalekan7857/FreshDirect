@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Order detail renderer (Stage 4)
+   Harvest Castle Admin — Order detail renderer (Stage 4)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store or fresh-direct.js.
@@ -144,7 +144,7 @@
     }
     if (missing) {
       missing.removeAttribute("hidden");
-      document.title = "Order not found | FreshDirect Admin";
+      document.title = "Order not found | Harvest Castle Admin";
     }
   }
 
@@ -169,7 +169,7 @@
     if (heading) {
       heading.textContent = "Order " + order.id;
     }
-    document.title = "Order " + order.id + " | FreshDirect Admin";
+    document.title = "Order " + order.id + " | Harvest Castle Admin";
   }
 
   function renderCustomer(order) {

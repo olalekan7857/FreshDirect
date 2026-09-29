@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Local seller-data store
+   Harvest Castle Admin — Local seller-data store
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store or fresh-direct.js.

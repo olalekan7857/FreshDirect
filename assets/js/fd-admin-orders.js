@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Orders list renderer (Stage 4)
+   Harvest Castle Admin — Orders list renderer (Stage 4)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store or fresh-direct.js.
@@ -182,7 +182,7 @@
       }
     }
     var cards = [
-      { icon: "fas fa-receipt", label: "Total orders", value: String(orders.length), context: "All orders placed through FreshDirect." },
+      { icon: "fas fa-receipt", label: "Total orders", value: String(orders.length), context: "All orders placed through Harvest Castle." },
       { icon: "fas fa-bell", label: "Awaiting action", value: String(awaiting), context: "Waiting for your reply or verification." },
       { icon: "fas fa-check-circle", label: "Paid", value: String(paid), context: "Orders with a paid status." },
       { icon: "fas fa-exclamation-circle", label: "Failed", value: String(failed), context: "Payments that did not go through." }

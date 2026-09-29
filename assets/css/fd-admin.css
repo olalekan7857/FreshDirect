@@ -1,9 +1,9 @@
 /* ==========================================================================
-   FreshDirect Admin — Stage 1 foundation (admin shell + login)
+   Harvest Castle Admin — Stage 1 foundation (admin shell + login)
    --------------------------------------------------------------------------
    Scoped ENTIRELY under `.fd-admin` so customer storefront styles are never
    affected. Reuses the existing project system only:
-     tokens    -> assets/css/style.css :root (theme/secondary/title/body/
+     tokens    -> assets/css/harvest-castle.css :root (theme/secondary/title/body/
                   smoke/border/error/success/white + title/body fonts)
      buttons   -> .vs-btn (template)
      fields    -> .form-control (template) + .fd-field / .fd-field-error
@@ -535,7 +535,7 @@
 }
 
 /* ==========================================================================
-   FreshDirect Admin — Stage 2 dashboard (admin-dashboard.html only)
+   Harvest Castle Admin — Stage 2 dashboard (admin-dashboard.html only)
    --------------------------------------------------------------------------
    New classes only (.fd-dash-*). Every value reuses the existing system:
      tokens  -> style.css :root (theme/secondary/title/body/smoke/border/
@@ -703,8 +703,8 @@
 }
 
 .fd-dash-pill.is-ok {
-  background: rgba(12, 119, 53, 0.1);
-  border-color: rgba(12, 119, 53, 0.25);
+  background: rgba(6, 65, 29, 0.1);
+  border-color: rgba(6, 65, 29, 0.25);
   color: var(--secondary-color);
 }
 
@@ -1002,7 +1002,7 @@
 }
 
 /* ==========================================================================
-   FreshDirect Admin — Stage 3A product list (admin-products.html only)
+   Harvest Castle Admin — Stage 3A product list (admin-products.html only)
    --------------------------------------------------------------------------
    New classes only (.fd-prod-*). Reuses the existing system exactly:
      controls -> .fd-shop-search / .fd-shop-select / .form-control /
@@ -1603,7 +1603,7 @@
 }
 
 /* ==========================================================================
-   FreshDirect Admin — Stage 3B product editor (admin-product-edit.html only)
+   Harvest Castle Admin — Stage 3B product editor (admin-product-edit.html only)
    --------------------------------------------------------------------------
    New classes only (.fd-edit-*). Reuses the existing system exactly:
      shell    -> .fd-admin-shell / sidebar / topbar (Stage 1, untouched)
@@ -2180,7 +2180,7 @@
 }
 
 /* ==========================================================================
-   FreshDirect Admin — Stage 4 order management (admin-orders.html +
+   Harvest Castle Admin — Stage 4 order management (admin-orders.html +
    admin-order.html only)
    --------------------------------------------------------------------------
    New classes only (.fd-orders-* / .fd-order-*). Reuses the existing
@@ -2651,7 +2651,7 @@
 }
 
 /* ==========================================================================
-   FreshDirect Admin — Stage 5 settings (admin-settings.html only)
+   Harvest Castle Admin — Stage 5 settings (admin-settings.html only)
    --------------------------------------------------------------------------
    New classes only (.fd-set-* / .fd-required). Reuses the existing system
    exactly:

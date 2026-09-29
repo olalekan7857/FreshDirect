@@ -1,8 +1,8 @@
 /* ==========================================================================
-   FreshDirect — Stage 1 foundation overrides
-   Layers on top of assets/css/style.css. Keeps the Farmix visual language
+   Harvest Castle — Stage 1 foundation overrides
+   Layers on top of assets/css/harvest-castle.css. Keeps the Farmix visual language
    (Fredoka + DM Sans, pill buttons, light borders) and fixes/adapts it
-   for the single-store FreshDirect experience.
+   for the single-store Harvest Castle experience.
    Future Django work: values here mirror settings (e.g. WHATSAPP_NUMBER
    lives in assets/js/fresh-direct.js -> FRESH_DIRECT.whatsappNumber).
    ========================================================================== */
@@ -58,7 +58,7 @@ textarea:focus-visible,
   display: inline-flex;
   align-items: center;
   /* gap:0 is deliberate — the wordmark is a bare text node + span, and any
-     flex gap would render as a visible space inside "FreshDirect". */
+     flex gap would render as a visible space inside "Harvest Castle". */
   gap: 0;
   font-family: var(--title-font);
   font-weight: 700;
@@ -94,7 +94,7 @@ textarea:focus-visible,
   max-width: 96px;
   object-fit: contain;
   flex: 0 0 auto;
-  margin-right: 10px;
+  margin-right: 6px;
 }
 
 .fd-logo span {
@@ -202,8 +202,8 @@ textarea:focus-visible,
   font-weight: 500;
   font-size: 15px;
   color: var(--secondary-color);
-  background: rgba(12, 119, 53, 0.1);
-  border: 1px solid rgba(12, 119, 53, 0.25);
+  background: rgba(6, 65, 29, 0.1);
+  border: 1px solid rgba(6, 65, 29, 0.25);
   padding: 8px 18px;
   border-radius: 9999px;
   margin-bottom: 18px;
@@ -1960,7 +1960,7 @@ a.fd-cat-pill {
   min-height: 44px;
 }
 
-/* Obvious active state in the FreshDirect green (same as icon hover). */
+/* Obvious active state in the Harvest Castle green (same as icon hover). */
 .fd-view-toggle [aria-pressed="true"] {
   background: var(--secondary-color);
   color: var(--white-color);
@@ -2458,7 +2458,7 @@ a.fd-cat-pill {
   color: var(--body-color);
 }
 
-/* FreshDirect pill inputs on top of the template .form-control. */
+/* Harvest Castle pill inputs on top of the template .form-control. */
 #fd-checkout-form .form-control {
   border-radius: 9999px;
   margin-bottom: 0;
@@ -2739,7 +2739,7 @@ a.fd-cat-pill {
    STAGE 8 — CONTACT FAQ (contact.html .fd-faq only).
    Behavior comes from the already-loaded Bootstrap 5 Collapse plugin via
    data-bs-toggle — no new JavaScript. These two rules only pull the
-   template accordion into the FreshDirect radius/spacing system.
+   template accordion into the Harvest Castle radius/spacing system.
    ========================================================================== */
 .fd-faq .accordion-item {
   border-radius: var(--fd-radius);
@@ -3263,7 +3263,7 @@ a.fd-cat-pill {
   .fd-logo img.fd-logo-img {
     height: 30px;
     max-width: 72px;
-    margin-right: 8px;
+    margin-right: 5px;
   }
 
   #fd-home-grid,
@@ -3417,7 +3417,7 @@ a.fd-cat-pill {
   .fd-logo img.fd-logo-img {
     height: 28px;
     max-width: 64px;
-    margin-right: 6px;
+    margin-right: 4px;
   }
 
   .fd-logo i {
@@ -3567,7 +3567,7 @@ a.fd-cat-pill {
    - .vs-btn becomes a solid orange button (--theme-color) for contrast.
    ========================================================================== */
 
-/* Active nav link: desktop + mobile, current page in FreshDirect green. */
+/* Active nav link: desktop + mobile, current page in Harvest Castle green. */
 .main-menu.menu-style1 > ul > li > a[aria-current="page"],
 .main-menu a[aria-current="page"] {
   color: var(--secondary-color);

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Settings source boundary (Stage 5: Admin Settings)
+   Harvest Castle Admin — Settings source boundary (Stage 5: Admin Settings)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store and never loads fresh-direct.js, so customer
@@ -7,9 +7,9 @@
 
    CANONICAL SETTINGS SHAPE (the seller's operational record for V1):
      { businessName, contactPhone, whatsapp, address, description }
-   Every default below is an established FreshDirect truth, taken from
+   Every default below is an established Harvest Castle truth, taken from
    the live storefront — never invented:
-     - businessName "FreshDirect" (site identity everywhere).
+     - businessName "Harvest Castle" (site identity everywhere).
      - whatsapp "2349011058873" (FRESH_DIRECT.whatsappNumber, the single
        centralized ordering/contact number).
      - address: the outlet line used across the storefront footers.
@@ -72,7 +72,7 @@
   };
 
   var DEFAULTS = {
-    businessName: "FreshDirect",
+    businessName: "Harvest Castle",
     contactPhone: "",
     whatsapp: CENTRAL_WHATSAPP,
     address: "No. 89, behind Foursquare Church, FUNAAB Alabata Road, Camp, Abeokuta.",

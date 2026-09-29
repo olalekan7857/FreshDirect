@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Blog List (static demo, Django-ready)
+   Harvest Castle Admin — Blog List (static demo, Django-ready)
    --------------------------------------------------------------------------
    Mirrors the product-list interaction pattern: search + category +
    status filter over static cards, result count, empty state, and a

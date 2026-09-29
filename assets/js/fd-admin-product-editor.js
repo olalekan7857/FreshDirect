@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Product Editor (Stage 3B: Add / Edit, frontend only)
+   Harvest Castle Admin — Product Editor (Stage 3B: Add / Edit, frontend only)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store or fresh-direct.js.
@@ -732,7 +732,7 @@
     /* ----- Mode headings: the seller always knows create vs edit ----- */
     function applyModeText(entry) {
       if (isCreate) {
-        document.title = "Add Product | FreshDirect Admin";
+        document.title = "Add Product | Harvest Castle Admin";
         if (heading) {
           heading.textContent = "Add Product";
         }
@@ -740,7 +740,7 @@
           topbarTitle.textContent = "Add Product";
         }
         if (lead) {
-          lead.textContent = "Create a new FreshDirect product with its pack sizes and prices.";
+          lead.textContent = "Create a new Harvest Castle product with its pack sizes and prices.";
         }
         if (submitLabel) {
           submitLabel.textContent = "Create Product";
@@ -749,7 +749,7 @@
           identitySection.setAttribute("hidden", "");
         }
       } else {
-        document.title = "Edit " + entry.name + " | FreshDirect Admin";
+        document.title = "Edit " + entry.name + " | Harvest Castle Admin";
         if (heading) {
           heading.textContent = "Edit Product";
         }
@@ -1641,7 +1641,7 @@
             missingText.textContent = "No product with ID “" + mode.id + "” exists. Nothing was created or changed — check the Products list for the correct item.";
           }
           showOnly("missing");
-          document.title = "Product not found | FreshDirect Admin";
+          document.title = "Product not found | Harvest Castle Admin";
           return;
         }
       }

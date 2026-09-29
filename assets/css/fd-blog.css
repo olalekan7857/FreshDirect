@@ -1,8 +1,8 @@
 /* ==========================================================================
-   FreshDirect Blog — Stage B2 design system
+   Harvest Castle Blog — Stage B2 design system
    --------------------------------------------------------------------------
    Blog-only components (.fd-blog-*, .fd-post-*, .fd-featured-*,
-   .fd-toc-*, .fd-skeleton) built on the existing FreshDirect language:
+   .fd-toc-*, .fd-skeleton) built on the existing Harvest Castle language:
      tokens   -> style.css :root + fd-theme.css --fd-* (dark remaps)
      buttons  -> .vs-btn / .fd-ghost-btn / .icon-btn (template + foundation)
      pills    -> .fd-cat-pills / .fd-cat-pill (shop toolbar)

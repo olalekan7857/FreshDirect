@@ -128,7 +128,7 @@
   $(".vs-menu-wrapper").vsmobilemenu();
 
   /*---------- 04. Sticky fix ----------
-     FreshDirect: the header sticks as soon as the menu scrolls out of
+     Harvest Castle: the header sticks as soon as the menu scrolls out of
      view (past 200px) and stays visible while scrolling. The template's
      min-height compensation prevents any content jump. */
   var lastScrollTop = "";

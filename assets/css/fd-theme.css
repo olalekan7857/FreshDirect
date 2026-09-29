@@ -1,7 +1,7 @@
 /* ==========================================================================
-   FreshDirect — Global Light/Dark theme layer (final, centralized)
+   Harvest Castle — Global Light/Dark theme layer (final, centralized)
    --------------------------------------------------------------------------
-   Load order (every FreshDirect page, storefront AND admin):
+   Load order (every Harvest Castle page, storefront AND admin):
      bootstrap -> fontawesome -> (template extras) -> style.css
      -> fresh-direct.css -> [fd-admin.css on admin pages] -> fd-theme.css
    fd-theme.css loads LAST and only ADDS:
@@ -16,7 +16,7 @@
    is inert and the approved Light appearance renders exactly as before.
 
    Architecture:
-     FreshDirect tokens (--fd-*)  ->  template vars remapped for Dark
+     Harvest Castle tokens (--fd-*)  ->  template vars remapped for Dark
      ->  shared components  ->  storefront pages  ->  admin pages.
    Components consume the remapped template vars wherever Light mode
    already used them; only hardcoded Light values get explicit overrides.
@@ -25,7 +25,7 @@
    - 3-level hierarchy: page --fd-bg / surfaces --fd-surface /
      elevated --fd-surface-2. Borders do the separation work; shadows
      stay minimal.
-   - Brand stays FreshDirect: green #0c7735 / orange #FF6B35 fills are
+   - Brand stays Harvest Castle: green #06411D / gold #DEAD39 fills are
      unchanged. Only small dark-green TEXT usages get a luminous variant
      (--fd-brand-green-text) so they stay readable on dark surfaces.
    - Status semantics preserved: green=ok, red=error, amber=warning.
@@ -49,10 +49,10 @@
   --fd-border: #bfbfbf;
   --fd-hairline: #ececec;
   --fd-input-bg: #ffffff;
-  --fd-brand-green-text: #0c7735;
+  --fd-brand-green-text: #06411D;
   --fd-warn-text: #8a6d00;
   --fd-error-text: #dc3545;
-  --fd-focus: #0c7735;
+  --fd-focus: #06411D;
   color-scheme: light;
 }
 
@@ -200,7 +200,7 @@ html[data-theme="dark"] .mfp-counter {
   color: var(--fd-text-2);
 }
 
-/* ============ 5. Storefront: FreshDirect card system ===================
+/* ============ 5. Storefront: Harvest Castle card system ===================
    Every white card becomes --fd-surface; every #ececec hairline becomes
    --fd-hairline. Layout, spacing, radius and behavior are untouched. */
 html[data-theme="dark"] .fd-trust,
@@ -365,7 +365,7 @@ html[data-theme="dark"] .fd-admin .fd-order-status-note.is-error {
 /* ============ 8. Hardcoded black text that must lift in Dark ===========
    The template pins these to var(--black-color) (or #4E4E4E), so the
    section-2 variable remap cannot reach them. Each selector below was
-   verified to render on themed FreshDirect pages (category titles,
+   verified to render on themed Harvest Castle pages (category titles,
    product-card names/prices incl. JS-rendered cards, side-cart amounts,
    cart remove hover, FAQ chevrons). Text sitting on unchanged brand
    fills (cart badge, burger icon, yellow pills) is intentionally left

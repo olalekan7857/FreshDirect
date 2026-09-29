@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Dashboard DEVELOPMENT / MOCK data (Stage 2,
+   Harvest Castle Admin — Dashboard DEVELOPMENT / MOCK data (Stage 2,
    products only since Stage 4)
    --------------------------------------------------------------------------
    There is no Django backend yet, so this file is the single, clearly

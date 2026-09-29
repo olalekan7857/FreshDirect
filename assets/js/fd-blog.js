@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Blog — UI interactions only (no data, no routing)
+   Harvest Castle Blog — UI interactions only (no data, no routing)
    --------------------------------------------------------------------------
    This file owns FRONTEND BEHAVIOR ONLY:
      - article share-on-WhatsApp link (built from the current page URL)

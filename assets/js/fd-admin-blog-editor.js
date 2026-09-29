@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Blog Editor (static demo, Django-ready)
+   Harvest Castle Admin — Blog Editor (static demo, Django-ready)
    --------------------------------------------------------------------------
    Mirrors the product-editor pattern: ?id= edits a known static post,
    no ?id= creates a new one, unknown ?id= shows the not-found state.
@@ -163,7 +163,7 @@
         heading.textContent = "Edit: " + known.title;
       }
       if (lead) {
-        lead.textContent = "Update this FreshDirect article. Saving keeps the same post ID.";
+        lead.textContent = "Update this Harvest Castle article. Saving keeps the same post ID.";
       }
       if (submitLabel) {
         submitLabel.textContent = "Save Changes";
@@ -186,7 +186,7 @@
         heading.textContent = "Add a New Post";
       }
       if (lead) {
-        lead.textContent = "Create a new FreshDirect article with its cover image and content.";
+        lead.textContent = "Create a new Harvest Castle article with its cover image and content.";
       }
       if (submitLabel) {
         submitLabel.textContent = "Publish Post";

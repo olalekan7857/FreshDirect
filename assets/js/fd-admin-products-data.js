@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Product source boundary (Stage 3A foundation)
+   Harvest Castle Admin — Product source boundary (Stage 3A foundation)
    --------------------------------------------------------------------------
    There is no Django backend yet. The established source of truth is
    FD_CATALOG in assets/js/fresh-direct.js (canonical shape

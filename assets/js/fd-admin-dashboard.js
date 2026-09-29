@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Dashboard renderer (Stage 2)
+   Harvest Castle Admin — Dashboard renderer (Stage 2)
    --------------------------------------------------------------------------
    Vanilla JS, no dependencies, no framework. Admin-scoped: never touches
    the customer cart store or fresh-direct.js.

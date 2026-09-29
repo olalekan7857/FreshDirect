@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect — single configuration + small enhancements (Stage 1)
+   Harvest Castle — single configuration + small enhancements (Stage 1)
    --------------------------------------------------------------------------
    SINGLE SOURCE OF TRUTH for values the backend will own later:
      FRESH_DIRECT.whatsappNumber  -> future Django setting WHATSAPP_NUMBER
@@ -18,7 +18,7 @@
     // WHATSAPP_NUMBER. Every WhatsApp entry point site-wide follows it.
     whatsappNumber: "2349011058873",
     defaultMessage:
-      "Hello FreshDirect! I would like to place an order for farm produce.",
+      "Hello Harvest Castle! I would like to place an order for farm produce.",
     currency: "NGN",
     shopUrl: "product.html",
   };
@@ -43,7 +43,7 @@
       var variant = el.getAttribute("data-variant") || "";
       var what = variant ? name + " — " + variant : name;
       return (
-        "Hello FreshDirect! I would like to order: " +
+        "Hello Harvest Castle! I would like to order: " +
         what +
         " (Qty: " +
         qty +
@@ -53,14 +53,14 @@
     }
     if (mode === "cart") {
       return (
-        "Hello FreshDirect! I would like to place an order from the website. " +
+        "Hello Harvest Castle! I would like to place an order from the website. " +
         "Please help me complete my order."
       );
     }
     if (mode === "restock") {
       var item = el.getAttribute("data-product") || "farm produce";
       return (
-        "Hello FreshDirect! Please let me know when " +
+        "Hello Harvest Castle! Please let me know when " +
         item +
         " is back in stock. Thank you."
       );
@@ -525,7 +525,7 @@
   }
 
   function cartWhatsAppMessage(validItems, subtotal) {
-    var lines = ["Hello FreshDirect! I would like to order:"];
+    var lines = ["Hello Harvest Castle! I would like to order:"];
     for (var i = 0; i < validItems.length; i++) {
       var it = validItems[i];
       var variantLabel = it.variant || it.unit || "";
@@ -1160,7 +1160,7 @@
         if (missing) {
           missing.removeAttribute("hidden");
         }
-        document.title = "Product not found | FreshDirect";
+        document.title = "Product not found | Harvest Castle";
         return;
       }
       renderPDP(root, product);
@@ -1586,7 +1586,7 @@
   };
 
   function pdpSEO(product, meta) {
-    document.title = product.name + " | FreshDirect";
+    document.title = product.name + " | Harvest Castle";
     var base = product.variants[0];
     for (var i = 0; i < product.variants.length; i++) {
       if (product.variants[i].id === product.defaultVariant) {
@@ -1597,13 +1597,13 @@
     if (desc) {
       desc.setAttribute(
         "content",
-        product.name + " (" + product.category + ") from FreshDirect. " +
+        product.name + " (" + product.category + ") from Harvest Castle. " +
           "Choose your weight, add to cart, or order through WhatsApp."
       );
     }
     var og = document.querySelector('meta[property="og:title"]');
     if (og) {
-      og.setAttribute("content", product.name + " | FreshDirect");
+      og.setAttribute("content", product.name + " | Harvest Castle");
     }
     var ld = document.getElementById("fd-pdp-jsonld");
     if (ld) {
@@ -2008,7 +2008,7 @@
   }
 
   function checkoutWhatsAppMessage(order) {
-    var lines = ["Hello FreshDirect! I would like to place this order:"];
+    var lines = ["Hello Harvest Castle! I would like to place this order:"];
     lines.push("");
     lines.push("Name: " + order.customer.name);
     lines.push("Phone: " + order.customer.phone);
@@ -2490,12 +2490,12 @@
     // renders an order, and URL state is never trusted for payment.
     if (!order || (urlId && urlId !== order.id)) {
       mount.appendChild(confirmInvalidNode());
-      document.title = "Order not found | FreshDirect";
+      document.title = "Order not found | Harvest Castle";
       return;
     }
     if (!urlId) {
       mount.appendChild(confirmInvalidNode());
-      document.title = "Order not found | FreshDirect";
+      document.title = "Order not found | Harvest Castle";
       return;
     }
 
@@ -2506,7 +2506,7 @@
           icon: "fab fa-whatsapp",
           badge: "WhatsApp order",
           title: "Thank you, " + confirmFirstName(order),
-          lead: "Your order details are ready — send the WhatsApp message to FreshDirect to confirm it. Nothing is paid until we confirm with you.",
+          lead: "Your order details are ready — send the WhatsApp message to Harvest Castle to confirm it. Nothing is paid until we confirm with you.",
           ref: order.id,
           order: order,
           note: "Delivery is arranged personally with you — any delivery fee will be confirmed before anything is prepared.",
@@ -2522,7 +2522,7 @@
           ],
         })
       );
-      document.title = "Order " + order.id + " | FreshDirect";
+      document.title = "Order " + order.id + " | Harvest Castle";
       return;
     }
     if (order.status === "pending") {
@@ -2542,7 +2542,7 @@
           ],
         })
       );
-      document.title = "Payment pending | FreshDirect";
+      document.title = "Payment pending | Harvest Castle";
       return;
     }
     if (order.status === "failed") {
@@ -2568,7 +2568,7 @@
           ],
         })
       );
-      document.title = "Payment failed | FreshDirect";
+      document.title = "Payment failed | Harvest Castle";
       return;
     }
     if (confirmationPaidOk(order)) {
@@ -2588,13 +2588,13 @@
           ],
         })
       );
-      document.title = "Order " + order.id + " confirmed | FreshDirect";
+      document.title = "Order " + order.id + " confirmed | Harvest Castle";
       return;
     }
     // Anything else (including status:"paid" WITHOUT backend verification)
     // is treated as not found — never a success screen.
     mount.appendChild(confirmInvalidNode());
-    document.title = "Order not found | FreshDirect";
+    document.title = "Order not found | Harvest Castle";
   }
 
   function wireConfirmation() {
@@ -2610,7 +2610,7 @@
      Architecture: Contact Form UI -> FreshDirectContact.submitContact()
      -> future Django endpoint. There is NO contact endpoint today, so the
      boundary reports "not-configured" and the UI hands the validated
-     message to WhatsApp (the established FreshDirect channel, wired from
+     message to WhatsApp (the established Harvest Castle channel, wired from
      FRESH_DIRECT.whatsappNumber — never hardcoded here). No success is
      ever claimed that did not happen; no personal data is persisted.
      Django integration = set FRESH_DIRECT.contactEndpoint and replace
@@ -2724,7 +2724,7 @@
   // WhatsApp handoff for a validated enquiry. Uses the single configured
   // number via the shared builder — the number never appears here.
   function contactWhatsAppHref(payload) {
-    var lines = ["Hello FreshDirect!"];
+    var lines = ["Hello Harvest Castle!"];
     lines.push("");
     lines.push("Name: " + payload.name);
     lines.push("Phone: " + payload.phone);
@@ -2783,7 +2783,7 @@
         return;
       }
       // No backend endpoint yet: hand the validated message to WhatsApp,
-      // the established FreshDirect channel. Nothing is claimed as sent
+      // the established Harvest Castle channel. Nothing is claimed as sent
       // until the customer sends it there.
       window.open(contactWhatsAppHref(payload), "_blank", "noopener");
       contactStatus("Thank you, " + contactFirstName(payload) + " — your message is ready in WhatsApp. Press send there and we will respond shortly.", false);

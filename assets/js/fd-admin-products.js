@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FreshDirect Admin — Product List (Stage 3A list; Stage 3B wired Edit)
+   Harvest Castle Admin — Product List (Stage 3A list; Stage 3B wired Edit)
    --------------------------------------------------------------------------
    Presentation: one semantic list — each product renders as a single
    bordered card (<li class="fd-prod-card">). Hierarchy inside the card
