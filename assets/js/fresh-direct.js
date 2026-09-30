@@ -164,7 +164,91 @@
   }
 
   function fmtNaira(n) {
-    return "\u20A6" + Number(n).toLocaleString("en-NG");
+    return "\u20A6" + Math.round(Number(n) || 0).toLocaleString("en-NG");
+  }
+
+  /* ---------- KG quantity helpers (shared by PDP / cart / checkout) ----------
+     A line is a KG line only when its unit/variant text mentions "kg"
+     (e.g. variant id "1kg" / label "1kg"). All other units (bunch, pack,
+     bottle, basket, piece, tuber, …) keep the legacy integer behavior. */
+  var FD_KG_MIN = 0.5;
+  var FD_KG_MAX = 99;
+  var FD_EACH_MAX = 99;
+
+  function fdIsKgText(s) {
+    return typeof s === "string" && /kg/i.test(s);
+  }
+
+  function fdIsKgVariant(v) {
+    return !!v && (fdIsKgText(v.id) || fdIsKgText(v.label));
+  }
+
+  function fdIsKgItem(item) {
+    return !!item && (fdIsKgText(item.variant) || fdIsKgText(item.unit));
+  }
+
+  function fdRound2(n) {
+    return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+  }
+
+  // Display: strip trailing zeros ("1", "1.5", "1.3", "2") — never "1.0".
+  function fdFormatQty(q, isKg) {
+    var n = fdRound2(q);
+    if (!isKg) {
+      return String(Math.round(n));
+    }
+    var s = n.toFixed(2);
+    s = s.replace(/\.?0+$/, "");
+    return s === "" ? "0" : s;
+  }
+
+  function fdQtyLabel(q, isKg) {
+    var s = fdFormatQty(q, isKg);
+    return isKg ? s + " kg" : s;
+  }
+
+  function fdLineTotal(price, qty) {
+    return Math.round(Number(price) * Number(qty));
+  }
+
+  // Manual kg entry: up to 2 decimals, 0.5–99. Never snaps to 0.5 steps.
+  function fdParseKgQty(raw) {
+    if (raw === null || raw === undefined) {
+      return null;
+    }
+    var s = String(raw).trim();
+    if (!/^\d+(\.\d{1,2})?$/.test(s)) {
+      return null;
+    }
+    var n = fdRound2(parseFloat(s));
+    if (!isFinite(n) || n < FD_KG_MIN || n > FD_KG_MAX) {
+      return null;
+    }
+    return n;
+  }
+
+  function fdClampQty(q, isKg) {
+    var n = fdRound2(q);
+    if (!isFinite(n)) {
+      return isKg ? 1 : 1;
+    }
+    if (isKg) {
+      if (n < FD_KG_MIN) {
+        return FD_KG_MIN;
+      }
+      if (n > FD_KG_MAX) {
+        return FD_KG_MAX;
+      }
+      return n;
+    }
+    n = Math.round(n);
+    if (n < 1) {
+      return 1;
+    }
+    if (n > FD_EACH_MAX) {
+      return FD_EACH_MAX;
+    }
+    return n;
   }
 
   /* ---------- Toasts ---------- */
@@ -211,6 +295,14 @@
           items[i].variant = items[i].variant || items[i].unit || "";
           items[i].key = items[i].id + "__" + items[i].variant;
         }
+        // Normalize quantities: KG lines keep decimals, others stay ints.
+        var q = Number(items[i].qty);
+        if (isFinite(q)) {
+          items[i].qty = fdClampQty(q, fdIsKgItem(items[i]));
+        } else {
+          items[i].qty = 1;
+        }
+        items[i].price = Number(items[i].price) || 0;
       }
       return items;
     } catch (e) {
@@ -229,7 +321,7 @@
   function cartCount(items) {
     var n = 0;
     for (var i = 0; i < items.length; i++) {
-      n += items[i].qty;
+      n = fdRound2(n + Number(items[i].qty));
     }
     return n;
   }
@@ -237,13 +329,15 @@
   function cartSubtotal(items) {
     var n = 0;
     for (var i = 0; i < items.length; i++) {
-      n += items[i].qty * items[i].price;
+      n += fdLineTotal(items[i].price, items[i].qty);
     }
     return n;
   }
 
+  // Navbar badge = number of cart line items (never a KG quantity like
+  // "1.5" or "3.3"). cartCount() above is kept for any other consumer.
   function refreshBadges() {
-    var n = String(cartCount(cartLoad()));
+    var n = String(cartLoad().length);
     var badges = document.querySelectorAll(
       "#fd-cart-count, #fd-cart-count-mobile"
     );
@@ -349,25 +443,33 @@
     name.textContent = item.name;
     var meta = document.createElement("span");
     var variantLabel = item.variant || item.unit || "";
-    meta.textContent =
-      (variantLabel ? variantLabel + " · " : "") + fmtNaira(item.price);
+    var itemKg = fdIsKgItem(item);
+    // KG lines show the live total ("1.4 kg · ₦2,800"), never the static
+    // variant pack label ("2kg") which can't reflect edited quantities.
+    if (itemKg) {
+      meta.textContent = fdQtyLabel(item.qty, true) + " · " + fmtNaira(item.price);
+      meta.setAttribute("data-cart-meta", "kg");
+    } else {
+      meta.textContent =
+        (variantLabel ? variantLabel + " · " : "") + fmtNaira(item.price);
+    }
     var qty = document.createElement("div");
     qty.className = "fd-qty";
     var dec = document.createElement("button");
     dec.type = "button";
     dec.setAttribute("data-cart-dec", item.key);
-    dec.setAttribute("aria-label", "Decrease quantity of " + item.name);
+    dec.setAttribute("aria-label", "Decrease quantity of " + item.name + (itemKg ? " by 0.5 kilograms" : ""));
     dec.innerHTML = '<i class="fas fa-minus" aria-hidden="true"></i>';
-    var count = document.createElement("span");
-    count.setAttribute("aria-live", "polite");
-    count.textContent = String(item.qty);
     var inc = document.createElement("button");
     inc.type = "button";
     inc.setAttribute("data-cart-inc", item.key);
-    inc.setAttribute("aria-label", "Increase quantity of " + item.name);
+    inc.setAttribute("aria-label", "Increase quantity of " + item.name + (itemKg ? " by 0.5 kilograms" : ""));
     inc.innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i>';
     qty.appendChild(dec);
-    qty.appendChild(count);
+    var valueNodes = cartQtyValueNodes(item, itemKg);
+    for (var vn = 0; vn < valueNodes.length; vn++) {
+      qty.appendChild(valueNodes[vn]);
+    }
     qty.appendChild(inc);
     info.appendChild(name);
     info.appendChild(meta);
@@ -377,7 +479,7 @@
     var line = document.createElement("div");
     line.className = "fd-cart-line";
     var amount = document.createElement("strong");
-    amount.textContent = fmtNaira(item.price * item.qty);
+    amount.textContent = fmtNaira(fdLineTotal(item.price, item.qty));
     var remove = document.createElement("button");
     remove.type = "button";
     remove.className = "fd-cart-remove";
@@ -393,7 +495,16 @@
   // Merge a full line item by variant key. Used by Product Details;
   // card-level adds go through cartAdd below (same merge, qty 1).
   function cartAddLine(line) {
-    if (!line || !line.key || !line.id || !(line.qty >= 1) || !(line.price >= 0)) {
+    if (!line || !line.key || !line.id || !(line.price >= 0)) {
+      return false;
+    }
+    var lineIsKg = fdIsKgItem(line);
+    var lineQty = fdClampQty(Number(line.qty), lineIsKg);
+    if (lineIsKg) {
+      if (!(lineQty >= FD_KG_MIN)) {
+        return false;
+      }
+    } else if (!(lineQty >= 1)) {
       return false;
     }
     var items = cartLoad();
@@ -404,7 +515,10 @@
       }
     }
     if (found) {
-      found.qty += line.qty;
+      found.qty = fdClampQty(
+        fdRound2(Number(found.qty) + lineQty),
+        fdIsKgItem(found)
+      );
     } else {
       items.push({
         key: line.key,
@@ -412,7 +526,7 @@
         name: line.name,
         variant: line.variant || "",
         price: line.price,
-        qty: line.qty,
+        qty: lineQty,
         unit: line.unit || "",
         category: line.category || "",
         image: line.image || "",
@@ -424,7 +538,9 @@
     renderCartPanel();
     renderCartPage();
     var label = line.name + (line.variant ? " — " + line.variant : "");
-    showToast("Added to cart: " + label + " × " + line.qty);
+    showToast(
+      "Added to cart: " + label + " × " + fdQtyLabel(lineQty, lineIsKg)
+    );
     return true;
   }
 
@@ -437,20 +553,186 @@
     cartAddLine(data);
   }
 
+  // KG lines step by 0.5 from their current qty (1.3 + 0.5 = 1.8);
+  // every other unit keeps the legacy ±1 integer steps.
   function cartBump(key, delta) {
     var items = cartLoad();
     for (var i = 0; i < items.length; i++) {
       if (items[i].key === key) {
-        items[i].qty += delta;
-        if (items[i].qty < 1) {
-          items[i].qty = 1;
-        }
+        var isKg = fdIsKgItem(items[i]);
+        var step = isKg ? 0.5 : 1;
+        var dir = delta >= 0 ? 1 : -1;
+        items[i].qty = fdClampQty(
+          fdRound2(Number(items[i].qty) + dir * step),
+          isKg
+        );
       }
     }
     cartSave(items);
     refreshBadges();
     renderCartPanel();
     renderCartPage();
+  }
+
+  /* ---------- Editable KG quantities in cart surfaces ----------
+     KG lines render an <input> (+ static "kg" suffix) inside the existing
+     .fd-qty pill; non-KG lines keep the legacy <span>. Typing updates the
+     line price + subtotals live (no re-render, no focus loss); commit
+     happens on change/blur/Enter through the single cart store so the
+     preview, cart.html, checkout, and WhatsApp always agree. */
+  function cartQtyValueNodes(item, isKg) {
+    if (!isKg) {
+      var count = document.createElement("span");
+      count.setAttribute("aria-live", "polite");
+      count.textContent = fdQtyLabel(item.qty, false);
+      return [count];
+    }
+    var input = document.createElement("input");
+    input.type = "text";
+    input.className = "fd-cart-qty-input";
+    input.value = fdFormatQty(item.qty, true);
+    input.setAttribute("data-cart-qty", item.key);
+    input.setAttribute("inputmode", "decimal");
+    input.setAttribute("autocomplete", "off");
+    input.setAttribute("autocapitalize", "off");
+    input.setAttribute("spellcheck", "false");
+    input.setAttribute(
+      "aria-label",
+      "Quantity in kilograms for " + item.name
+    );
+    var suffix = document.createElement("span");
+    suffix.className = "fd-qty-unit";
+    suffix.setAttribute("aria-hidden", "true");
+    suffix.textContent = "kg";
+    return [input, suffix];
+  }
+
+  // Commit path: single store write, then re-render every surface.
+  function cartSetQty(key, qty) {
+    var items = cartLoad();
+    var changed = false;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].key === key) {
+        items[i].qty = fdClampQty(Number(qty), fdIsKgItem(items[i]));
+        changed = true;
+      }
+    }
+    if (!changed) {
+      return false;
+    }
+    cartSave(items);
+    refreshBadges();
+    renderCartPanel();
+    renderCartPage();
+    return true;
+  }
+
+  // Live path while typing: patch the visible line price + every subtotal
+  // from the existing KG pricing (fdLineTotal) without re-rendering, so
+  // focus and the half-typed value are never disturbed.
+  function cartLivePrice(input, qty) {
+    var key = input.getAttribute("data-cart-qty");
+    var items = cartLoad();
+    var price = null;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].key === key) {
+        price = items[i].price;
+      }
+    }
+    if (price === null) {
+      return;
+    }
+    var li = null;
+    if (input.closest) {
+      li = input.closest('li[data-key]');
+    }
+    if (li) {
+      var amount = li.querySelector(".fd-cart-line strong, .fd-cartpage-line");
+      if (amount) {
+        amount.textContent = fmtNaira(fdLineTotal(price, qty));
+      }
+      // Keep the "1.4 kg · ₦2,800" line in step with the typed quantity.
+      var liveMeta = li.querySelector("[data-cart-meta]");
+      if (liveMeta) {
+        var kind = liveMeta.getAttribute("data-cart-meta");
+        if (kind === "kg") {
+          liveMeta.textContent =
+            fdQtyLabel(qty, true) + " · " + fmtNaira(price);
+        } else if (kind === "kg-each") {
+          liveMeta.textContent =
+            fdQtyLabel(qty, true) + " · " + fmtNaira(price) + " each";
+        }
+      }
+    }
+    var sub = 0;
+    for (var j = 0; j < items.length; j++) {
+      sub += fdLineTotal(
+        items[j].price,
+        items[j].key === key ? qty : items[j].qty
+      );
+    }
+    var nodes = document.querySelectorAll(
+      "[data-cart-subtotal], [data-cart-total], " +
+        "[data-checkout-subtotal], [data-checkout-total]"
+    );
+    for (var s = 0; s < nodes.length; s++) {
+      nodes[s].textContent = fmtNaira(sub);
+    }
+  }
+
+  function cartQtyInputFromEvent(ev) {
+    if (!ev || !ev.target || !ev.target.closest) {
+      return null;
+    }
+    return ev.target.closest("[data-cart-qty]");
+  }
+
+  var fdCartQtyWired = false;
+  function wireCartQtyInputs() {
+    if (fdCartQtyWired) {
+      return;
+    }
+    fdCartQtyWired = true;
+    // Live: valid keystrokes refresh prices at once, invalid ones wait.
+    document.addEventListener("input", function (ev) {
+      var t = cartQtyInputFromEvent(ev);
+      if (!t) {
+        return;
+      }
+      var parsed = fdParseKgQty(t.value);
+      if (parsed === null) {
+        return;
+      }
+      t.removeAttribute("aria-invalid");
+      cartLivePrice(t, parsed);
+    });
+    // Commit on blur / select / Enter (re-renders from the single store;
+    // invalid values revert to the stored quantity).
+    document.addEventListener("change", function (ev) {
+      var t = cartQtyInputFromEvent(ev);
+      if (!t) {
+        return;
+      }
+      var parsed = fdParseKgQty(t.value);
+      if (parsed === null) {
+        renderCartPanel();
+        renderCartPage();
+        return;
+      }
+      t.removeAttribute("aria-invalid");
+      cartSetQty(t.getAttribute("data-cart-qty"), parsed);
+    });
+    document.addEventListener("keydown", function (ev) {
+      if (!ev || ev.key !== "Enter") {
+        return;
+      }
+      var t = cartQtyInputFromEvent(ev);
+      if (!t) {
+        return;
+      }
+      ev.preventDefault();
+      t.blur();
+    });
   }
 
   function cartRemove(key) {
@@ -498,17 +780,22 @@
   // page: they render as removable "unavailable" rows and are excluded
   // from the subtotal and the WhatsApp order. Prices are never invented.
   function cartPageValid(item) {
-    return (
-      !!item &&
-      typeof item.id === "string" &&
-      !!item.id &&
-      typeof item.name === "string" &&
-      !!item.name &&
-      isFinite(item.price) &&
-      item.price >= 0 &&
-      isFinite(item.qty) &&
-      item.qty >= 1
-    );
+    if (
+      !item ||
+      typeof item.id !== "string" ||
+      !item.id ||
+      typeof item.name !== "string" ||
+      !item.name ||
+      !isFinite(item.price) ||
+      item.price < 0 ||
+      !isFinite(item.qty)
+    ) {
+      return false;
+    }
+    if (fdIsKgItem(item)) {
+      return item.qty >= FD_KG_MIN && item.qty <= FD_KG_MAX;
+    }
+    return item.qty >= 1 && Math.round(item.qty) === Number(item.qty);
   }
 
   // Stored image first; fall back to the catalog so older lines and
@@ -529,13 +816,14 @@
     for (var i = 0; i < validItems.length; i++) {
       var it = validItems[i];
       var variantLabel = it.variant || it.unit || "";
+      var itKg = fdIsKgItem(it);
       lines.push("");
       lines.push(
         i + 1 + ". " + it.name + (variantLabel ? " — " + variantLabel : "") +
-        " × " + it.qty
+        " × " + fdQtyLabel(it.qty, itKg)
       );
       lines.push(
-        fmtNaira(it.price) + " each — " + fmtNaira(it.price * it.qty)
+        fmtNaira(it.price) + " each — " + fmtNaira(fdLineTotal(it.price, it.qty))
       );
     }
     lines.push("");
@@ -592,13 +880,21 @@
     link.textContent = item.name;
     name.appendChild(link);
     var meta = document.createElement("span");
-    meta.textContent =
-      (variantLabel ? variantLabel + " · " : "") + fmtNaira(item.price) + " each";
+    var pageKg = fdIsKgItem(item);
+    // Same as the preview: KG lines show the live total, not the static pack.
+    if (pageKg) {
+      meta.textContent =
+        fdQtyLabel(item.qty, true) + " · " + fmtNaira(item.price) + " each";
+      meta.setAttribute("data-cart-meta", "kg-each");
+    } else {
+      meta.textContent =
+        (variantLabel ? variantLabel + " · " : "") + fmtNaira(item.price) + " each";
+    }
     idWrap.appendChild(name);
     idWrap.appendChild(meta);
     var line = document.createElement("strong");
     line.className = "fd-cartpage-line";
-    line.textContent = fmtNaira(item.price * item.qty);
+    line.textContent = fmtNaira(fdLineTotal(item.price, item.qty));
     top.appendChild(idWrap);
     top.appendChild(line);
     info.appendChild(top);
@@ -608,22 +904,22 @@
     var qty = document.createElement("div");
     qty.className = "fd-qty";
     qty.setAttribute("role", "group");
-    qty.setAttribute("aria-label", "Quantity for " + item.name);
+    qty.setAttribute("aria-label", "Quantity for " + item.name + (pageKg ? " in kilograms" : ""));
     var dec = document.createElement("button");
     dec.type = "button";
     dec.setAttribute("data-cart-dec", item.key);
-    dec.setAttribute("aria-label", "Decrease quantity of " + item.name);
+    dec.setAttribute("aria-label", "Decrease quantity of " + item.name + (pageKg ? " by 0.5 kilograms" : ""));
     dec.innerHTML = '<i class="fas fa-minus" aria-hidden="true"></i>';
-    var count = document.createElement("span");
-    count.setAttribute("aria-live", "polite");
-    count.textContent = String(item.qty);
     var inc = document.createElement("button");
     inc.type = "button";
     inc.setAttribute("data-cart-inc", item.key);
-    inc.setAttribute("aria-label", "Increase quantity of " + item.name);
+    inc.setAttribute("aria-label", "Increase quantity of " + item.name + (pageKg ? " by 0.5 kilograms" : ""));
     inc.innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i>';
     qty.appendChild(dec);
-    qty.appendChild(count);
+    var pageValueNodes = cartQtyValueNodes(item, pageKg);
+    for (var pvn = 0; pvn < pageValueNodes.length; pvn++) {
+      qty.appendChild(pageValueNodes[pvn]);
+    }
     qty.appendChild(inc);
     actions.appendChild(qty);
 
@@ -699,6 +995,7 @@
   function wireCart() {
     refreshBadges();
     renderCartPanel();
+    wireCartQtyInputs();
     document.addEventListener("click", function (ev) {
       var add = ev.target.closest("[data-add-to-cart]");
       if (add && !add.disabled) {
@@ -1235,6 +1532,13 @@
           b.setAttribute("aria-pressed", isDefault ? "true" : "false");
           b.addEventListener("click", function () {
             state.variant = v;
+            // Keep the chosen amount but fit the new variant's rules:
+            // KG keeps decimals (≥0.5), each-unit snaps to an integer (≥1).
+            if (fdIsKgVariant(v)) {
+              state.qty = fdClampQty(Number(state.qty) || 1, true);
+            } else {
+              state.qty = fdClampQty(Math.round(Number(state.qty) || 1), false);
+            }
             var btns = wrap.querySelectorAll("[data-variant-id]");
             for (var k = 0; k < btns.length; k++) {
               btns[k].setAttribute(
@@ -1255,28 +1559,43 @@
       }
     }
 
-    // Quantity stepper.
-    var qtyOut = document.getElementById("fd-pdp-qty");
+    // Quantity stepper. KG variants step by 0.5 from the current value
+    // (1.3 + 0.5 = 1.8, never snapped); other units keep legacy ±1 ints.
+    // KG variants get a typable decimal input; other units keep the span.
     var decBtn = document.getElementById("fd-pdp-dec");
     var incBtn = document.getElementById("fd-pdp-inc");
     if (decBtn) {
       decBtn.addEventListener("click", function () {
-        if (state.qty > 1) {
-          state.qty -= 1;
+        var isKg = fdIsKgVariant(state.variant);
+        var step = isKg ? 0.5 : 1;
+        var next = fdRound2(Number(state.qty) - step);
+        next = fdClampQty(next, isKg);
+        if (fdRound2(next) !== fdRound2(Number(state.qty))) {
+          state.qty = next;
+          pdpSync(root, state);
+        } else {
           pdpSync(root, state);
         }
       });
     }
     if (incBtn) {
       incBtn.addEventListener("click", function () {
-        if (state.qty < 99) {
-          state.qty += 1;
+        var isKg = fdIsKgVariant(state.variant);
+        var step = isKg ? 0.5 : 1;
+        var next = fdRound2(Number(state.qty) + step);
+        next = fdClampQty(next, isKg);
+        if (fdRound2(next) !== fdRound2(Number(state.qty))) {
+          state.qty = next;
+          pdpSync(root, state);
+        } else {
           pdpSync(root, state);
         }
       });
     }
-    if (qtyOut) {
-      qtyOut.textContent = "1";
+    pdpEnsureQtyControl(state);
+    var qtyInit = document.getElementById("fd-pdp-qty");
+    if (qtyInit && qtyInit.tagName !== "INPUT") {
+      qtyInit.textContent = "1";
     }
 
     // Purchase actions.
@@ -1340,29 +1659,151 @@
     pdpSEO(product, meta);
   }
 
-  function pdpSync(root, state) {
-    var v = state.variant;
-    setText("fd-pdp-price", fmtNaira(v.price));
-    setText("fd-pdp-unit", v.label);
-    var qtyOut = document.getElementById("fd-pdp-qty");
-    if (qtyOut) {
-      qtyOut.textContent = String(state.qty);
+  // KG qty control: an <input> (decimal keyboard, no native step
+  // validation) for KG variants, the original <span> otherwise. Same pill
+  // styling, same position — no layout change.
+  function pdpEnsureQtyControl(state) {
+    var isKg = fdIsKgVariant(state.variant);
+    var el = document.getElementById("fd-pdp-qty");
+    if (!el) {
+      return null;
     }
+    var wantInput = isKg;
+    var hasInput = el.tagName === "INPUT";
+    if (wantInput && !hasInput) {
+      var input = document.createElement("input");
+      input.id = "fd-pdp-qty";
+      input.type = "text";
+      input.setAttribute("inputmode", "decimal");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("autocapitalize", "off");
+      input.setAttribute("spellcheck", "false");
+      input.setAttribute("aria-label", "Quantity in kilograms");
+      input.className = "fd-pdp-qty-input";
+      input.value = fdFormatQty(state.qty, true);
+      if (el.parentNode) {
+        el.parentNode.replaceChild(input, el);
+      }
+      pdpWireQtyInput(input, state);
+      return input;
+    }
+    if (!wantInput && hasInput) {
+      var span = document.createElement("span");
+      span.id = "fd-pdp-qty";
+      span.setAttribute("aria-live", "polite");
+      span.textContent = fdFormatQty(state.qty, false);
+      if (el.parentNode) {
+        el.parentNode.replaceChild(span, el);
+      }
+      return span;
+    }
+    return el;
+  }
+
+  function pdpWireQtyInput(input, state) {
+    if (!input || input.getAttribute("data-fd-wired") === "true") {
+      return;
+    }
+    input.setAttribute("data-fd-wired", "true");
+    // Live: update the price as soon as the value parses — never rewrite
+    // what the customer is still typing.
+    input.addEventListener("input", function () {
+      var parsed = fdParseKgQty(input.value);
+      if (parsed === null) {
+        input.removeAttribute("aria-invalid");
+        return;
+      }
+      state.qty = parsed;
+      pdpSyncPrices(state);
+    });
+    var commit = function () {
+      var parsed = fdParseKgQty(input.value);
+      if (parsed === null) {
+        if (String(input.value).trim() !== "") {
+          input.setAttribute("aria-invalid", "true");
+        }
+        input.value = fdFormatQty(state.qty, true);
+        input.removeAttribute("aria-invalid");
+        pdpSyncPrices(state);
+        return;
+      }
+      input.removeAttribute("aria-invalid");
+      state.qty = parsed;
+      input.value = fdFormatQty(state.qty, true);
+      pdpSyncPrices(state);
+    };
+    input.addEventListener("change", commit);
+    input.addEventListener("blur", commit);
+    input.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") {
+        commit();
+      }
+    });
+  }
+
+  // Price-only refresh used while typing (input keeps focus + raw text).
+  function pdpSyncPrices(state) {
+    var v = state.variant;
+    var isKg = fdIsKgVariant(state.variant);
     var amount = document.getElementById("fd-pdp-total-amount");
     if (amount) {
-      amount.textContent = fmtNaira(v.price * state.qty);
+      amount.textContent = fmtNaira(fdLineTotal(v.price, state.qty));
     }
     var detail = document.getElementById("fd-pdp-total-detail");
     if (detail) {
-      detail.textContent = "· " + v.label + " × " + state.qty;
+      detail.textContent = "· " + v.label + " × " + fdQtyLabel(state.qty, isKg);
     }
     var waBtn = document.getElementById("fd-pdp-wa");
     if (waBtn && state.product.status !== "out") {
       waBtn.setAttribute("data-product", state.product.name);
       waBtn.setAttribute("data-variant", v.label);
-      waBtn.setAttribute("data-qty", String(state.qty));
+      waBtn.setAttribute("data-qty", fdFormatQty(state.qty, isKg));
+      if (isKg) {
+        waBtn.setAttribute("data-unit", "kg");
+      } else {
+        waBtn.removeAttribute("data-unit");
+      }
       wireWhatsApp();
     }
+  }
+
+  function pdpSync(root, state) {
+    var v = state.variant;
+    var isKg = fdIsKgVariant(state.variant);
+    setText("fd-pdp-price", fmtNaira(v.price));
+    setText("fd-pdp-unit", v.label);
+    var el = pdpEnsureQtyControl(state);
+    if (el) {
+      if (el.tagName === "INPUT") {
+        // Don't clobber mid-typing; sync only when not focused.
+        if (document.activeElement !== el) {
+          el.value = fdFormatQty(state.qty, true);
+        }
+        el.setAttribute("aria-label", "Quantity in kilograms");
+      } else {
+        el.textContent = fdFormatQty(state.qty, isKg);
+      }
+    }
+    var decBtn = document.getElementById("fd-pdp-dec");
+    var incBtn = document.getElementById("fd-pdp-inc");
+    if (decBtn) {
+      decBtn.setAttribute(
+        "aria-label",
+        isKg ? "Decrease quantity by 0.5 kilograms" : "Decrease quantity"
+      );
+      var atMin = isKg
+        ? Number(state.qty) <= FD_KG_MIN
+        : Number(state.qty) <= 1;
+      decBtn.disabled = !!atMin;
+    }
+    if (incBtn) {
+      incBtn.setAttribute(
+        "aria-label",
+        isKg ? "Increase quantity by 0.5 kilograms" : "Increase quantity"
+      );
+      incBtn.disabled = Number(state.qty) >= FD_KG_MAX;
+    }
+    pdpSyncPrices(state);
     void root;
   }
 
@@ -1877,14 +2318,15 @@
     var lines = [];
     for (var j = 0; j < valid.length; j++) {
       var it = valid[j];
-      lines.push({
+        lines.push({
         productId: it.id,
         variantId: it.unit || it.variant || "",
         name: it.name,
         variantLabel: it.variant || it.unit || "",
         quantity: it.qty,
+        quantityLabel: fdQtyLabel(it.qty, fdIsKgItem(it)),
         unitPrice: it.price,
-        lineTotal: it.price * it.qty,
+        lineTotal: fdLineTotal(it.price, it.qty),
       });
     }
     return {
@@ -1982,14 +2424,14 @@
         var variantLabel = it.variant || it.unit || "";
         var left = document.createElement("div");
         var title = document.createElement("strong");
-        title.textContent = it.name + " × " + it.qty;
+        title.textContent = it.name + " × " + fdQtyLabel(it.qty, fdIsKgItem(it));
         var sub = document.createElement("span");
         sub.textContent =
           (variantLabel ? variantLabel + " · " : "") + fmtNaira(it.price) + " each";
         left.appendChild(title);
         left.appendChild(sub);
         var amount = document.createElement("strong");
-        amount.textContent = fmtNaira(it.price * it.qty);
+        amount.textContent = fmtNaira(fdLineTotal(it.price, it.qty));
         li.appendChild(left);
         li.appendChild(amount);
         list.appendChild(li);
@@ -2036,11 +2478,16 @@
     }
     for (var i = 0; i < order.items.length; i++) {
       var it = order.items[i];
+      var itQty = it.quantityLabel || String(it.quantity);
+      // quantityLabel already carries " kg" for KG lines (e.g. "1.3 kg").
+      if (!it.quantityLabel && fdIsKgText(it.variantLabel)) {
+        itQty = fdQtyLabel(it.quantity, true);
+      }
       lines.push("");
       lines.push(
         i + 1 + ". " + it.name +
           (it.variantLabel ? " — " + it.variantLabel : "") +
-          " × " + it.quantity
+          " × " + itQty
       );
       lines.push(
         fmtNaira(it.unitPrice) + " each — " + fmtNaira(it.lineTotal)
@@ -2289,8 +2736,11 @@
         var li = document.createElement("li");
         var left = document.createElement("div");
         var title = document.createElement("strong");
-        title.textContent =
-          it.name + " × " + it.quantity;
+        var cQty = it.quantityLabel || String(it.quantity);
+        if (!it.quantityLabel && fdIsKgText(it.variantLabel)) {
+          cQty = fdQtyLabel(it.quantity, true);
+        }
+        title.textContent = it.name + " × " + cQty;
         var sub = document.createElement("span");
         sub.textContent =
           (it.variantLabel ? it.variantLabel + " · " : "") +

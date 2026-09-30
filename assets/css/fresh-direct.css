@@ -1345,6 +1345,30 @@ a.fd-cat-pill {
   gap: 14px;
 }
 
+/* Preview list scrolls on its own so the subtotal + buttons stay in view.
+   A thin always-visible scrollbar signals that more items are below. */
+.sideCart-wrapper .fd-cart-items {
+  max-height: min(38vh, 320px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary-color) transparent;
+  padding-right: 4px;
+}
+
+.sideCart-wrapper .fd-cart-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sideCart-wrapper .fd-cart-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sideCart-wrapper .fd-cart-items::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 9999px;
+}
+
 .fd-cart-item {
   display: flex;
   gap: 12px;
@@ -1415,6 +1439,26 @@ a.fd-cat-pill {
   text-align: center;
   font-weight: 700;
   font-size: 14px;
+}
+
+/* Editable KG quantity: same pill, same slot — input holds the number,
+   the static "kg" suffix keeps the existing "3.3 kg" reading. */
+.fd-cart-qty-input {
+  width: 48px;
+  max-width: 52px;
+  min-height: 30px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline-offset: 2px;
+  padding: 5px 2px;
+}
+
+.fd-qty-unit {
+  padding-right: 4px;
 }
 
 .fd-cart-line {
@@ -1808,6 +1852,20 @@ a.fd-cat-pill {
   text-align: center;
   font-weight: 700;
   font-size: 17px;
+}
+
+/* KG decimal input: same pill slot as the span, no layout shift. */
+.fd-pdp-qty-input {
+  width: 64px;
+  max-width: 72px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 17px;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline-offset: 2px;
+  padding: 6px 2px;
 }
 
 .fd-pdp-add {
